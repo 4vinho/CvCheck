@@ -38,3 +38,4 @@ Definir a configuracao inicial da pipeline do backend, incluindo middleware esse
 - Swagger UI habilitado apenas em desenvolvimento na rota `docs`
 - endpoint `GET /health` validado por teste de integracao
 - endpoint `GET /api/platform` validado por teste de integracao
+- pipeline centralizada dentro do projeto `CvCheck.Backend`

@@ -46,10 +46,10 @@ Como **time tecnico**, quero **definir a arquitetura inicial, a organizacao do r
 
 - estilo de API: `ASP.NET Core Web API` com `Controllers`
 - stack oficial: `.NET 10`
-- solucao inicial orientada pelas camadas `Api`, `Application`, `Domain` e `Infrastructure`
-- `Api` referencia `Application`
-- `Infrastructure` concentra adaptadores e dependencias externas
-- `Domain` permanece isolado de framework, transporte e persistencia
+- solucao inicial com um unico projeto de runtime chamado `CvCheck.Backend`
+- organizacao interna por modulos e pastas, sem separar `Application`, `Domain` e `Infrastructure` em assemblies agora
+- projeto de testes separado em `CvCheck.Backend.Tests`
+- novas separacoes em projetos so devem acontecer quando houver pressao arquitetural real
 
 ### Convencoes tecnicas
 
@@ -74,7 +74,7 @@ A proxima US deve implementar apenas a fundacao tecnica da API dentro da baselin
 
 - criar a solution em `src/backend`
 - configurar pipeline inicial da API e OpenAPI
-- materializar os projetos `Api`, `Application`, `Domain` e `Infrastructure`
+- materializar o projeto `CvCheck.Backend` e o projeto de testes correspondente
 - manter fora do escopo banco, Identity e regras de negocio
 
 ## Evidencias

@@ -40,4 +40,4 @@ Definir como o projeto sera organizado desde o inicio, incluindo separacao macro
 - `src/frontend` fica reservado para a futura aplicacao Vue 3
 - `tests/backend` concentra os testes automatizados do backend
 - `docs/` permanece como fonte oficial de rastreabilidade e backlog
-- a estrutura favorece evolucao incremental por permitir scaffold futuro sem reorganizacao de raiz
+- a estrutura favorece evolucao incremental por permitir tanto projeto unico quanto futuras extracoes sem reorganizacao de raiz

@@ -122,13 +122,11 @@ The backend baseline approved for the next implementation step is:
 
 - style: `ASP.NET Core Web API` with `Controllers`
 - stack: `.NET 10`
-- layering: `Api`, `Application`, `Domain`, `Infrastructure`
-- dependency direction:
-  - `Api` depends on `Application`
-  - `Infrastructure` implements external concerns
-  - `Domain` remains isolated from frameworks and delivery details
+- runtime project: `CvCheck.Backend`
+- test project: `CvCheck.Backend.Tests`
+- internal organization by modules and folders instead of separate assemblies
 
-This repository baseline does not yet scaffold the backend solution, database, Identity, authentication flows, migrations, or external providers. Those items are intentionally deferred to the next backend story.
+The backend foundation stays pragmatic: one runtime project is enough for this phase, and new assemblies should only be extracted when there is real architectural pressure. This repository baseline does not yet scaffold database, Identity, authentication flows, migrations, or external providers. Those items are intentionally deferred to future backend stories.
 
 ### Repository conventions
 
@@ -149,6 +147,6 @@ The application should prioritize clarity and trust over automation for its own 
 
 ## Next Steps
 
-This baseline prepares the repository for the next backend story, `US-20260422142554`, which is responsible for creating the initial `.NET 10` API solution, OpenAPI pipeline, settings, and project structure inside `src/backend`.
+This baseline prepares the repository for the next backend story, `US-20260422142554`, which is responsible for creating the initial `.NET 10` backend solution, OpenAPI pipeline, settings, and project structure inside `src/backend`.
 
 The README remains the general product reference for the application, while the detailed implementation traceability lives under `docs/`.

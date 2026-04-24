@@ -19,7 +19,7 @@ Antes de iniciar esta US, a implementacao deve assumir como fixo:
 
 - solution e projetos sob `src/backend`
 - API no estilo `ASP.NET Core Web API` com `Controllers`
-- organizacao em `Api`, `Application`, `Domain` e `Infrastructure`
+- organizacao em projeto unico `CvCheck.Backend`, com modulos internos por pastas
 - exposicao do contrato da API por OpenAPI
 - ausencia intencional de banco funcional, `Identity` e regras de negocio nesta primeira fundacao tecnica
 
@@ -34,11 +34,8 @@ Antes de iniciar esta US, a implementacao deve assumir como fixo:
 ### Estrutura criada
 
 - `src/backend/CvCheck.slnx`
-- `src/backend/src/CvCheck.Api`
-- `src/backend/src/CvCheck.Application`
-- `src/backend/src/CvCheck.Domain`
-- `src/backend/src/CvCheck.Infrastructure`
-- `tests/backend/CvCheck.Api.Tests`
+- `src/backend/src/CvCheck.Backend`
+- `tests/backend/CvCheck.Backend.Tests`
 
 ### Baseline tecnica materializada
 
@@ -47,7 +44,7 @@ Antes de iniciar esta US, a implementacao deve assumir como fixo:
 - pipeline minima com `ProblemDetails`, exception handler global, `HealthChecks`, OpenAPI e Swagger UI em desenvolvimento
 - endpoint institucional `GET /api/platform`
 - endpoint operacional `GET /health`
-- composicao por extensoes `AddApplication()` e `AddInfrastructure()`
+- composicao centralizada no projeto `CvCheck.Backend`, com modulos internos e extensao unica de registro
 
 ### Bibliotecas adotadas
 

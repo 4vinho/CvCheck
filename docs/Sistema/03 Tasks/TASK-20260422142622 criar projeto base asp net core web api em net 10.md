@@ -25,12 +25,9 @@ Planejar a criacao do projeto base `ASP.NET Core Web API` em `.NET 10`, definind
 - SDK fixado em `10.0.203`
 - solution criada como `src/backend/CvCheck.slnx`
 - projetos materializados:
-  - `CvCheck.Api`
-  - `CvCheck.Application`
-  - `CvCheck.Domain`
-  - `CvCheck.Infrastructure`
-  - `CvCheck.Api.Tests`
+  - `CvCheck.Backend`
+  - `CvCheck.Backend.Tests`
 
 ## Observacao
 
-O scaffold foi mantido sem banco, `Identity` e regras de negocio, respeitando o recorte desta historia.
+O scaffold foi mantido em projeto unico de runtime, sem banco, `Identity` e regras de negocio, respeitando o recorte desta historia.

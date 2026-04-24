@@ -41,3 +41,4 @@ Definir os arquivos de configuracao e as bibliotecas essenciais do backend, mant
 - `Directory.Build.props` com `Nullable`, `ImplicitUsings` e `TreatWarningsAsErrors`
 - `Directory.Packages.props` para gestao central das versoes de pacotes
 - sem inclusao de `Entity Framework`, `Identity`, `Serilog` ou telemetria completa neste corte
+- bibliotecas reunidas no projeto unico `CvCheck.Backend`
