@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CvCheck.Api/CvCheck.Api.csproj" />
+    <Project Path="src/CvCheck.Application/CvCheck.Application.csproj" />
+    <Project Path="src/CvCheck.Domain/CvCheck.Domain.csproj" />
+    <Project Path="src/CvCheck.Infrastructure/CvCheck.Infrastructure.csproj" />
+  </Folder>
+  <Project Path="../../tests/backend/CvCheck.Api.Tests/CvCheck.Api.Tests.csproj" />
+</Solution>
