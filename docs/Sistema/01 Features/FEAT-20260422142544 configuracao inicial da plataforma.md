@@ -15,6 +15,22 @@ Estabelecer a base tecnica do projeto para iniciar o desenvolvimento com backend
 
 Reduzir retrabalho de setup, padronizar a stack desde o inicio, acelerar o onboarding tecnico e diminuir o risco de decisoes inconsistentes entre frontend e backend.
 
+## Escopo tecnico aprovado
+
+- repositorio em formato `monorepo`
+- separacao fisica inicial em `src/backend`, `src/frontend` e `tests/backend`
+- backend oficial em `.NET 10`
+- frontend oficial em `Vue 3`
+- integracao entre as frentes exclusivamente por HTTP API com contrato OpenAPI
+- baseline pragmatica sem CI/CD completo neste primeiro corte
+
+## Fora desta feature
+
+- automacao completa de pipeline e deploy
+- regras de negocio do dominio
+- implementacao funcional de banco de dados
+- implementacao funcional de autenticacao e provedores externos
+
 ## Regras de negocio
 
 - [[RN-20260422142730 a stack inicial oficial do backend deve ser net 10]]

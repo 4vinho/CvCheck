@@ -90,6 +90,53 @@ Whenever a suggestion depends on inference or interpretation, the system should 
 
 The product should make it easy to understand what was changed in the adapted resume and why those changes were suggested.
 
+## Technical Baseline
+
+The repository starts as a monorepo with clear separation between application fronts and technical documentation:
+
+```text
+.
+|-- docs/
+|-- src/
+|   |-- backend/
+|   `-- frontend/
+|-- tests/
+|   `-- backend/
+|-- .editorconfig
+|-- .gitignore
+`-- README.md
+```
+
+### Frontend and backend boundaries
+
+- `src/frontend` is reserved for the future Vue 3 application.
+- `src/backend` is reserved for the future .NET 10 solution and backend projects.
+- `tests/backend` is reserved for automated backend tests.
+- `docs/` remains the source of truth for backlog, business rules, user stories, and traceability.
+
+Frontend and backend evolve independently. Integration happens only through an HTTP API with a clear contract published via OpenAPI. Build pipelines, release cadence, and deployment are expected to remain independent between the two fronts.
+
+### Backend architectural baseline
+
+The backend baseline approved for the next implementation step is:
+
+- style: `ASP.NET Core Web API` with `Controllers`
+- stack: `.NET 10`
+- layering: `Api`, `Application`, `Domain`, `Infrastructure`
+- dependency direction:
+  - `Api` depends on `Application`
+  - `Infrastructure` implements external concerns
+  - `Domain` remains isolated from frameworks and delivery details
+
+This repository baseline does not yet scaffold the backend solution, database, Identity, authentication flows, migrations, or external providers. Those items are intentionally deferred to the next backend story.
+
+### Repository conventions
+
+- repository and project naming use short technical English names aligned with the product name `CvCheck`
+- backlog artifact IDs remain as defined in `docs/`
+- initial versioning stays in the `0.x` range until the MVP stabilizes
+- root mandatory files are `README.md`, `.gitignore`, `.editorconfig`, and the `docs/` directory
+
 ## Direction for the Application
 
 At a high level, CvCheck should be built as an application centered on three pillars:
@@ -102,4 +149,6 @@ The application should prioritize clarity and trust over automation for its own 
 
 ## Next Steps
 
-This README is the general product reference for the application. From this foundation, the project can later derive features, user stories, tasks, and technical decisions with a clearer sense of scope and product intent.
+This baseline prepares the repository for the next backend story, `US-20260422142554`, which is responsible for creating the initial `.NET 10` API solution, OpenAPI pipeline, settings, and project structure inside `src/backend`.
+
+The README remains the general product reference for the application, while the detailed implementation traceability lives under `docs/`.
