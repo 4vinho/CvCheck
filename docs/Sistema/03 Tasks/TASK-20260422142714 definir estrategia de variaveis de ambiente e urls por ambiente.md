@@ -1,7 +1,7 @@
 ---
 tipo: task
 id: TASK-20260422142714
-status: backlog
+status: done
 feature: [[FEAT-20260422142544 configuracao inicial da plataforma]]
 us: [[US-20260422142601 definir padroes compartilhados e dev experience]]
 ---
@@ -14,7 +14,13 @@ Definir a estrategia inicial de variaveis de ambiente e URLs por ambiente para s
 
 ## Checklist
 
-- [ ] Delimitar como frontend e backend consumirao configuracoes
-- [ ] Definir URLs e ambientes considerados na baseline
-- [ ] Validar simplicidade e clareza para setup local
-- [ ] Registrar a estrategia escolhida
+- [x] Delimitar como frontend e backend consumirao configuracoes
+- [x] Definir URLs e ambientes considerados na baseline
+- [x] Validar simplicidade e clareza para setup local
+- [x] Registrar a estrategia escolhida
+
+## Implementacao
+
+- backend usa `appsettings.json` e `appsettings.Development.json` para configuracao por ambiente
+- frontend segue configuracao do Vite e scripts locais para `dev`, `build` e `preview`
+- URLs locais da API permanecem registradas em `launchSettings.json`, mantendo setup previsivel para desenvolvimento

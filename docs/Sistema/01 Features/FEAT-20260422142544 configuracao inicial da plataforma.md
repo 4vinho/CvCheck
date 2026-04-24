@@ -1,7 +1,7 @@
 ---
 tipo: feature
 id: FEAT-20260422142544
-status: backlog
+status: done
 prioridade: alta
 ---
 
@@ -30,6 +30,13 @@ Reduzir retrabalho de setup, padronizar a stack desde o inicio, acelerar o onboa
 - regras de negocio do dominio
 - implementacao funcional de banco de dados
 - implementacao funcional de autenticacao e provedores externos
+
+## Entrega consolidada
+
+- baseline documental e estrutural do repositorio consolidada
+- backend base em `.NET 10` materializado e depois simplificado para projeto unico `CvCheck.Backend`
+- frontend base em `Vue 3` com `Vite`, `Tailwind CSS` e `shadcn-vue` consolidado
+- padroes compartilhados de qualidade, setup local e integracao entre as frentes registrados no vault
 
 ## Regras de negocio
 

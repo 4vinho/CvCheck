@@ -1,7 +1,7 @@
 ---
 tipo: us
 id: US-20260422142601
-status: backlog
+status: done
 feature: [[FEAT-20260422142544 configuracao inicial da plataforma]]
 ---
 
@@ -13,9 +13,18 @@ Como **time tecnico**, quero **definir padroes compartilhados de qualidade, ambi
 
 ## Criterios de aceite
 
-- [ ] Existem tasks para lint, formatacao, ambientes e orientacoes basicas de setup local.
-- [ ] O contrato inicial de comunicacao entre frontend e backend esta coberto.
-- [ ] O escopo permanece pragmatico e nao inclui CI/CD completo nesta feature.
+- [x] Existem tasks para lint, formatacao, ambientes e orientacoes basicas de setup local.
+- [x] O contrato inicial de comunicacao entre frontend e backend esta coberto.
+- [x] O escopo permanece pragmatico e nao inclui CI/CD completo nesta feature.
+
+## Implementacao adotada
+
+- baseline compartilhada fechada com verificacoes minimas e previsiveis para frontend e backend
+- frontend validado por `npm run typecheck` e `npm run build`
+- backend validado por `dotnet restore`, `dotnet build` e `dotnet test`
+- contrato entre as frentes mantido exclusivamente por HTTP API com OpenAPI
+- configuracao de ambientes mantida simples, com `appsettings` no backend e scripts do Vite no frontend
+- onboarding tecnico consolidado nos arquivos raiz e no `README.md`, sem expandir o escopo para CI/CD completo
 
 ## Tasks
 
