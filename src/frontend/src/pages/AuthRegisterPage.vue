@@ -12,6 +12,13 @@
       </template>
 
       <form class="space-y-5" novalidate @submit.prevent="handleSubmit">
+        <div
+          v-if="submitError"
+          class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700"
+        >
+          {{ submitError }}
+        </div>
+
         <div class="space-y-2">
           <Label for="email">Email</Label>
           <Input
@@ -21,6 +28,7 @@
             inputmode="email"
             autocomplete="email"
             placeholder="voce@empresa.com"
+            :disabled="isSubmitting"
             :aria-invalid="Boolean(errors.email)"
           />
           <p class="text-sm text-muted-foreground">
@@ -39,6 +47,7 @@
             type="password"
             autocomplete="new-password"
             placeholder="Defina uma senha"
+            :disabled="isSubmitting"
             :aria-invalid="Boolean(errors.password)"
           />
           <p v-if="errors.password" class="text-sm font-medium text-red-600">
@@ -54,6 +63,7 @@
             type="password"
             autocomplete="new-password"
             placeholder="Repita a senha"
+            :disabled="isSubmitting"
             :aria-invalid="Boolean(errors.confirmPassword)"
           />
           <p v-if="errors.confirmPassword" class="text-sm font-medium text-red-600">
@@ -62,8 +72,8 @@
         </div>
 
         <div class="flex flex-wrap gap-3 pt-2">
-          <Button type="submit" size="lg">
-            Criar conta
+          <Button type="submit" size="lg" :disabled="isSubmitting">
+            {{ isSubmitting ? "Criando conta..." : "Criar conta" }}
           </Button>
         </div>
       </form>
@@ -94,14 +104,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import AuthInfoCard from "@/components/shared/AuthInfoCard.vue";
 import AuthPanel from "@/components/shared/AuthPanel.vue";
 import { useRouter } from "vue-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { submitRegister } from "@/lib/auth/register-api";
 import {
+  clearRegisterFormErrors,
   createRegisterFormValues,
   getRegisterPasswordGuidance,
   type RegisterFormErrors,
@@ -113,8 +125,11 @@ const router = useRouter();
 const form = reactive(createRegisterFormValues());
 const errors = reactive<RegisterFormErrors>({});
 const passwordGuidance = getRegisterPasswordGuidance();
+const isSubmitting = ref(false);
+const submitError = ref("");
 
-function handleSubmit() {
+async function handleSubmit() {
+  submitError.value = "";
   const nextErrors = validateRegisterForm(form);
 
   errors.email = nextErrors.email;
@@ -125,11 +140,34 @@ function handleSubmit() {
     return;
   }
 
-  router.push({
-    name: "auth-register-pending",
-    query: {
-      email: form.email.trim(),
-    },
-  });
+  isSubmitting.value = true;
+
+  try {
+    const result = await submitRegister(form);
+
+    if (!result.ok) {
+      if (result.kind === "validation") {
+        clearRegisterFormErrors(errors);
+        errors.email = result.errors.email;
+        errors.password = result.errors.password;
+        errors.confirmPassword = result.errors.confirmPassword;
+        submitError.value = result.message ?? "";
+        return;
+      }
+
+      submitError.value = result.message;
+      return;
+    }
+
+    clearRegisterFormErrors(errors);
+    router.push({
+      name: "auth-register-pending",
+      query: {
+        email: result.data.email,
+      },
+    });
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 </script>

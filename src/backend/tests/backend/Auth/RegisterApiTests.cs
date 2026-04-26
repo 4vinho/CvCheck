@@ -62,7 +62,7 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
         var payload = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
 
         Assert.NotNull(payload);
-        Assert.True(payload.Errors.ContainsKey("Email"));
+        Assert.True(payload.Errors.ContainsKey("email"));
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
         var payload = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
 
         Assert.NotNull(payload);
-        Assert.True(payload.Errors.ContainsKey("ConfirmPassword"));
+        Assert.True(payload.Errors.ContainsKey("confirmPassword"));
     }
 
     [Fact]

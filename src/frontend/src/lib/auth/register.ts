@@ -52,3 +52,9 @@ export function validateRegisterForm(values: RegisterFormValues): RegisterFormEr
 
   return errors;
 }
+
+export function clearRegisterFormErrors(errors: RegisterFormErrors) {
+  errors.email = undefined;
+  errors.password = undefined;
+  errors.confirmPassword = undefined;
+}

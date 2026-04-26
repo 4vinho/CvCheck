@@ -1,11 +1,18 @@
 using api.Infra.DependencyInjection;
 using api.Infra.Extensions;
+using api.App.Validation;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+        new BadRequestObjectResult(ModelStateValidationProblemDetailsFactory.Create(context.ModelState));
+});
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
