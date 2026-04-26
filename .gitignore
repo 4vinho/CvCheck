@@ -49,6 +49,7 @@ artifacts/
 TestResults/
 **/bin/
 **/obj/
+**.dotnet/
 
 # Local runtime files
 *.pid
