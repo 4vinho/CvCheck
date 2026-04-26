@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace backend.Tests.Auth;
 
@@ -18,13 +20,8 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            var dbContextDescriptor = services.SingleOrDefault(service =>
-                service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
-
-            if (dbContextDescriptor is not null)
-            {
-                services.Remove(dbContextDescriptor);
-            }
+            services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
+            services.RemoveAll<IDbContextOptionsConfiguration<ApplicationDbContext>>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase(databaseName));

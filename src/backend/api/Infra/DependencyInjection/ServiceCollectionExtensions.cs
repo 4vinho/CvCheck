@@ -9,10 +9,13 @@ namespace api.Infra.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not configured.");
+
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseInMemoryDatabase("CvCheckApi"));
+            options.UseNpgsql(connectionString));
 
         services
             .AddIdentityCore<ApplicationUser>(options =>
