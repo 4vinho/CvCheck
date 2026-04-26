@@ -1,0 +1,7 @@
+FROM postgres:17-alpine
+
+ENV POSTGRES_DB=cvcheck
+ENV POSTGRES_USER=cvcheck
+ENV POSTGRES_PASSWORD=cvcheck
+
+EXPOSE 5432
