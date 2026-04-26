@@ -13,9 +13,9 @@ Como **usuario com conta local recem-criada**, quero **confirmar meu email** par
 
 ## Criterios de aceite
 
-- [ ] O sistema gera e envia um codigo ou token de confirmacao para o email cadastrado apos o registro local.
-- [ ] Enquanto a conta estiver pendente de confirmacao, o sistema comunica claramente esse estado e permite reenvio controlado.
-- [ ] A confirmacao bem-sucedida altera o estado da conta e habilita autenticacao plena no sistema.
+- [x] O sistema gera e envia um codigo ou token de confirmacao para o email cadastrado apos o registro local.
+- [x] Enquanto a conta estiver pendente de confirmacao, o sistema comunica claramente esse estado e permite reenvio controlado.
+- [x] A confirmacao bem-sucedida altera o estado da conta e habilita autenticacao plena no sistema.
 
 ## Tasks
 

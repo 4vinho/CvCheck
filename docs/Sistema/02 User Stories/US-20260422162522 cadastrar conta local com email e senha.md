@@ -13,9 +13,9 @@ Como **visitante**, quero **criar uma conta local com email e senha** para **pas
 
 ## Criterios de aceite
 
-- [ ] O cadastro aceita os campos minimos da conta e valida email, senha e confirmacao de senha conforme as regras do Identity.
-- [ ] Uma conta local valida e criada com sucesso fica associada ao email como identificador principal.
-- [ ] A conta criada ainda nao tem uso pleno do sistema ate concluir a confirmacao de email.
+- [x] O cadastro aceita os campos minimos da conta e valida email, senha e confirmacao de senha conforme as regras do Identity.
+- [x] Uma conta local valida e criada com sucesso fica associada ao email como identificador principal.
+- [x] A conta criada ainda nao tem uso pleno do sistema ate concluir a confirmacao de email.
 
 ## Tasks
 
