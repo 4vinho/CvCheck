@@ -1,5 +1,6 @@
 using api.App.Contracts.Auth;
 using api.Core.Interfaces.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.App.Controllers;
@@ -9,6 +10,7 @@ namespace api.App.Controllers;
 public sealed class AuthController(
     IRegistrationService registrationService,
     ILoginService loginService,
+    ILogoutService logoutService,
     IEmailConfirmationService emailConfirmationService) : ControllerBase
 {
     [HttpPost("register")]
@@ -61,6 +63,16 @@ public sealed class AuthController(
         {
             Status = StatusCodes.Status400BadRequest
         });
+    }
+
+    [Authorize]
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+    {
+        await logoutService.LogoutAsync(cancellationToken);
+        return NoContent();
     }
 
     [HttpPost("email-confirmation/resend")]

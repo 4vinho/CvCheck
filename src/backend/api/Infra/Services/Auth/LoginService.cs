@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace api.Infra.Services.Auth;
 
-public sealed class LoginService(UserManager<ApplicationUser> userManager) : ILoginService
+public sealed class LoginService(
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager) : ILoginService
 {
     public async Task<LoginResult> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
@@ -28,6 +30,8 @@ public sealed class LoginService(UserManager<ApplicationUser> userManager) : ILo
         {
             return LoginResult.PendingEmailConfirmation(user.Email!);
         }
+
+        await signInManager.SignInAsync(user, isPersistent: false);
 
         return LoginResult.Authenticated(user.Email!);
     }

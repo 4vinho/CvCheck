@@ -345,11 +345,52 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.False(response.Headers.TryGetValues("Set-Cookie", out _));
+        Assert.True(response.Headers.TryGetValues("Set-Cookie", out var setCookieValues));
+        Assert.Contains(setCookieValues, header => header.Contains(".AspNetCore.Identity.Application=", StringComparison.Ordinal));
 
         var payload = await response.Content.ReadFromJsonAsync<LoginResponse>();
         Assert.NotNull(payload);
         Assert.False(payload.RequiresEmailConfirmation);
         Assert.Equal("authenticated", payload.Status);
+    }
+
+    [Fact]
+    public async Task Logout_AfterAuthenticatedLogin_ClearsCurrentSession()
+    {
+        var email = "logout-api@example.com";
+        const string password = "StrongPass1!";
+
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = password,
+            ConfirmPassword = password
+        });
+
+        var initialCode = (await factory.GetCodesForUserAsync(email)).Single().Code;
+        await client.PostAsJsonAsync("/auth/email-confirmation/confirm", new ConfirmEmailRequest
+        {
+            Email = email,
+            Code = initialCode
+        });
+
+        var loginResponse = await client.PostAsJsonAsync("/auth/login", new LoginRequest
+        {
+            Email = email,
+            Password = password
+        });
+
+        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+
+        var logoutResponse = await client.PostAsync("/auth/logout", content: null);
+
+        Assert.Equal(HttpStatusCode.NoContent, logoutResponse.StatusCode);
+        Assert.True(logoutResponse.Headers.TryGetValues("Set-Cookie", out var setCookieValues));
+        Assert.Contains(setCookieValues, header =>
+            header.Contains(".AspNetCore.Identity.Application=;", StringComparison.Ordinal)
+            && header.Contains("expires=", StringComparison.OrdinalIgnoreCase));
+
+        var secondLogoutResponse = await client.PostAsync("/auth/logout", content: null);
+        Assert.Equal(HttpStatusCode.Unauthorized, secondLogoutResponse.StatusCode);
     }
 }
