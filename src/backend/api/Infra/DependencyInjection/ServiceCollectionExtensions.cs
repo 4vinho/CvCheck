@@ -2,6 +2,7 @@ using api.Core.Entities;
 using api.Core.Interfaces;
 using api.Core.Interfaces.Auth;
 using api.Infra.Data;
+using api.Infra.Options;
 using api.Infra.Services.Auth;
 using api.Infra.Services;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +20,9 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
 
+        services.Configure<EmailDeliveryOptions>(
+            configuration.GetSection(EmailDeliveryOptions.SectionName));
+
         services
             .AddIdentityCore<ApplicationUser>(options =>
             {
@@ -31,7 +35,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
         services.AddScoped<ILoginService, LoginService>();
         services.AddSingleton<IConfirmationCodeGenerator, RandomConfirmationCodeGenerator>();
-        services.AddSingleton<IEmailConfirmationDeliveryService, NoOpEmailConfirmationDeliveryService>();
+        services.AddSingleton<IEmailConfirmationDeliveryService, SmtpEmailConfirmationDeliveryService>();
         services.AddSingleton<ITimeProvider, SystemTimeProvider>();
 
         return services;

@@ -1,0 +1,4 @@
+FROM axllent/mailpit:v1.27
+
+EXPOSE 1025
+EXPOSE 8025
