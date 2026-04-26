@@ -7,7 +7,7 @@
         </p>
         <CardTitle class="text-3xl">Pagina nao encontrada</CardTitle>
         <CardDescription class="text-base">
-          A rota informada nao faz parte da baseline atual da aplicacao.
+          O endereco informado nao corresponde a uma pagina disponivel.
         </CardDescription>
       </CardHeader>
       <CardContent class="flex justify-center">

@@ -6,7 +6,7 @@
           CvCheck
         </p>
         <h1 class="text-lg font-semibold text-foreground">
-          Frontend baseline
+          Area principal
         </h1>
       </div>
 
@@ -18,4 +18,3 @@
     </div>
   </header>
 </template>
-

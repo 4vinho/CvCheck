@@ -3,46 +3,43 @@
     <div class="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
       <div class="space-y-6">
         <div class="space-y-4">
-          <p class="text-sm font-medium uppercase tracking-[0.3em] text-muted-foreground">
-            US-20260422142558
-          </p>
           <div class="space-y-3">
             <h2 class="max-w-2xl text-4xl font-semibold tracking-tight text-balance text-foreground">
-              Base pronta para evoluir a SPA sem acoplar cedo demais ao backend.
+              Um espaco pronto para receber a experiencia autenticada.
             </h2>
             <p class="max-w-2xl text-base leading-7 text-muted-foreground">
-              Esta tela existe para validar o shell inicial, o roteamento e a
-              baseline visual com Tailwind CSS e componentes derivados do
-              shadcn-vue.
+              Esta area concentra a navegacao principal da aplicacao e prepara
+              o caminho para os proximos fluxos de conta, acesso e uso do
+              produto.
             </p>
           </div>
         </div>
 
         <div class="flex flex-wrap gap-3">
-          <Button>Proxima US</Button>
-          <Button variant="outline">Validar shell</Button>
+          <Button>Acessar minha conta</Button>
+          <Button variant="outline">Explorar a plataforma</Button>
         </div>
       </div>
 
       <Card class="border-border/80 bg-background/70">
         <CardHeader>
-          <CardTitle>Rotas iniciais</CardTitle>
+          <CardTitle>Navegacao principal</CardTitle>
           <CardDescription>
-            A navegacao minima ja existe para evitar refatoracao imediata.
+            Alguns caminhos principais ja estao organizados para a evolucao do produto.
           </CardDescription>
         </CardHeader>
         <CardContent class="space-y-3 text-sm text-muted-foreground">
           <div class="flex items-center justify-between rounded-xl border border-border/70 px-4 py-3">
             <span>/</span>
-            <span>redireciona para /app</span>
+            <span>redireciona para o cadastro</span>
           </div>
           <div class="flex items-center justify-between rounded-xl border border-border/70 px-4 py-3">
             <span>/app</span>
-            <span>shell base da aplicacao</span>
+            <span>area principal da aplicacao</span>
           </div>
           <div class="flex items-center justify-between rounded-xl border border-border/70 px-4 py-3">
             <span>/*</span>
-            <span>pagina 404 simples</span>
+            <span>pagina nao encontrada</span>
           </div>
         </CardContent>
       </Card>
@@ -75,19 +72,19 @@ import { Separator } from "@/components/ui/separator";
 
 const baselineItems = [
   {
-    title: "Estrutura",
-    description: "Organizacao inicial previsivel",
-    body: "src/app, src/layouts, src/pages, src/components/ui, src/components/shared, src/styles e src/lib.",
+    title: "Experiencia",
+    description: "Fluxos organizados com clareza",
+    body: "A estrutura separa area publica, area autenticada e componentes reutilizaveis para manter a navegacao consistente.",
   },
   {
-    title: "Aliases",
-    description: "Imports curtos e coerentes",
-    body: "O alias @/ aponta para src e funciona tanto em arquivos .ts e .vue via Vite e TypeScript.",
+    title: "Componentes",
+    description: "Base visual reaproveitavel",
+    body: "Cards, botoes e elementos de formulario seguem a mesma linguagem visual para acelerar a evolucao das proximas telas.",
   },
   {
-    title: "Fora do escopo",
-    description: "Sem acoplamento prematuro",
-    body: "Autenticacao, cliente HTTP, estado global, i18n, testes E2E e qualquer integracao com API ficam para USs seguintes.",
+    title: "Evolucao",
+    description: "Preparado para os proximos passos",
+    body: "A navegacao atual abre espaco para login, confirmacao de email e demais recursos da conta sem reestruturar a interface.",
   },
 ];
 </script>
