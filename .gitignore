@@ -45,6 +45,8 @@ coverage/
 
 # .NET
 .dotnet-cli/
+.dotnet/
+src/backend/.dotnet/
 artifacts/
 TestResults/
 **/bin/
