@@ -91,4 +91,28 @@ public sealed class RegisterUnitTests
         Assert.NotNull(user);
         Assert.Equal(request.Email, user.UserName);
     }
+
+    [Fact]
+    public async Task RegistrationService_WithValidLocalRegistration_CreatesAccountAsUnconfirmed()
+    {
+        var userManager = TestUserManagerFactory.Create();
+        var service = new RegistrationService(userManager);
+        var request = new RegisterRequest
+        {
+            Email = "pending@example.com",
+            Password = "StrongPass1!",
+            ConfirmPassword = "StrongPass1!"
+        };
+
+        var result = await service.RegisterAsync(request);
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(request.Email, result.Email);
+        Assert.Empty(result.Errors);
+
+        var user = await userManager.FindByEmailAsync(request.Email);
+
+        Assert.NotNull(user);
+        Assert.False(user.EmailConfirmed);
+    }
 }

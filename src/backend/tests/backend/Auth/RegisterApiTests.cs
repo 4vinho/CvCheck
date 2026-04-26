@@ -46,7 +46,7 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
     }
 
     [Fact]
-    public async Task Register_WithInvalidEmail_ReturnsValidationError()
+    public async Task Register_WithInvalidEmail_ReturnsValidationErrorAndDoesNotCreateAccount()
     {
         var request = new RegisterRequest
         {
@@ -63,10 +63,12 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
 
         Assert.NotNull(payload);
         Assert.True(payload.Errors.ContainsKey("email"));
+        Assert.False(response.Headers.TryGetValues("Set-Cookie", out _));
+        Assert.Null(await factory.FindUserByEmailAsync(request.Email));
     }
 
     [Fact]
-    public async Task Register_WithWeakPassword_ReturnsIdentityValidation()
+    public async Task Register_WithWeakPassword_ReturnsIdentityValidationAndDoesNotCreateAccount()
     {
         var request = new RegisterRequest
         {
@@ -83,6 +85,8 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
 
         Assert.NotNull(payload);
         Assert.True(payload.Errors.ContainsKey("password"));
+        Assert.False(response.Headers.TryGetValues("Set-Cookie", out _));
+        Assert.Null(await factory.FindUserByEmailAsync(request.Email));
     }
 
     [Fact]
@@ -106,7 +110,7 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
     }
 
     [Fact]
-    public async Task Register_WithExistingEmail_ReturnsValidation()
+    public async Task Register_WithExistingEmail_ReturnsValidationAndKeepsOriginalAccountPendingConfirmation()
     {
         var request = new RegisterRequest
         {
@@ -125,5 +129,12 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
 
         Assert.NotNull(payload);
         Assert.True(payload.Errors.ContainsKey("email"));
+        Assert.False(secondResponse.Headers.TryGetValues("Set-Cookie", out _));
+
+        var createdUser = await factory.FindUserByEmailAsync(request.Email);
+
+        Assert.NotNull(createdUser);
+        Assert.False(createdUser.EmailConfirmed);
+        Assert.Equal(request.Email, createdUser.UserName);
     }
 }
