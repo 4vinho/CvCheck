@@ -14,15 +14,15 @@ export function useResendEmailConfirmationMutation() {
     mutationFn: (email: string) => authService.resendEmailConfirmation(email),
     meta: {
       successToast: {
-        title: "Codigo reenviado",
+        title: "Code resent",
         message: ({ data }: { data?: ResendEmailConfirmationResponse }) =>
           data?.email
-            ? `Enviamos um novo codigo para ${data.email}. Use apenas a mensagem mais recente.`
-            : "Enviamos um novo codigo de confirmacao para o seu email.",
+            ? `We sent a new code to ${data.email}. Use only the most recent message.`
+            : "We sent a new confirmation code to your email.",
       },
       errorToast: {
-        title: "Nao foi possivel reenviar a confirmacao",
-        message: "Nao foi possivel reenviar a confirmacao.",
+        title: "Could not resend confirmation",
+        message: "Could not resend confirmation.",
       },
     },
   });

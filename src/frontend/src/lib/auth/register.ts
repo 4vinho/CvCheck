@@ -34,9 +34,9 @@ export function createRegisterFormValues(): RegisterFormValues {
 
 export function getRegisterPasswordGuidance() {
   return [
-    `Use pelo menos ${minimumPasswordLength} caracteres.`,
-    "Combine letras, numeros e simbolos para aumentar a seguranca.",
-    "O email sera o identificador principal da conta.",
+    `Use at least ${minimumPasswordLength} characters.`,
+    "Combine letters, numbers, and symbols to improve security.",
+    "Your email will be the primary account identifier.",
   ];
 }
 
@@ -52,21 +52,21 @@ export function validateRegisterForm(values: RegisterFormValues): RegisterFormEr
   const errors: RegisterFormErrors = {};
 
   if (!values.email.trim()) {
-    errors.email = "Informe um email para identificar a conta.";
+    errors.email = "Enter an email to identify the account.";
   } else if (!emailPattern.test(values.email)) {
-    errors.email = "Informe um email valido.";
+    errors.email = "Enter a valid email.";
   }
 
   if (!values.password) {
-    errors.password = "Informe uma senha.";
+    errors.password = "Enter a password.";
   } else if (values.password.length < minimumPasswordLength) {
-    errors.password = `Use pelo menos ${minimumPasswordLength} caracteres na senha.`;
+    errors.password = `Use at least ${minimumPasswordLength} characters in your password.`;
   }
 
   if (!values.confirmPassword) {
-    errors.confirmPassword = "Confirme a senha informada.";
+    errors.confirmPassword = "Confirm the password you entered.";
   } else if (values.confirmPassword !== values.password) {
-    errors.confirmPassword = "A confirmacao precisa ser identica a senha.";
+    errors.confirmPassword = "The confirmation must match the password exactly.";
   }
 
   return errors;
@@ -83,17 +83,17 @@ function getEmailHelp(email: string) {
 
   if (!normalizedEmail) {
     return createHelpMessage(
-      "Use um email que voce consiga acessar para confirmar a conta depois.",
+      "Use an email address you can access later to confirm the account.",
       "neutral",
     );
   }
 
   if (!emailPattern.test(normalizedEmail)) {
-    return createHelpMessage("Confira o formato do email antes de continuar.", "error");
+    return createHelpMessage("Check the email format before continuing.", "error");
   }
 
   return createHelpMessage(
-    "Esse email sera usado para entrar na conta e concluir a confirmacao.",
+    "This email will be used to sign in and complete the confirmation step.",
     "success",
   );
 }
@@ -101,7 +101,7 @@ function getEmailHelp(email: string) {
 function getPasswordHelp(password: string) {
   if (!password) {
     return createHelpMessage(
-      `Use pelo menos ${minimumPasswordLength} caracteres, com letras, numeros e simbolos.`,
+      `Use at least ${minimumPasswordLength} characters, including letters, numbers, and symbols.`,
       "neutral",
     );
   }
@@ -109,7 +109,7 @@ function getPasswordHelp(password: string) {
   if (password.length < minimumPasswordLength) {
     const remainingCharacters = minimumPasswordLength - password.length;
     return createHelpMessage(
-      `Faltam ${remainingCharacters} ${remainingCharacters === 1 ? "caractere" : "caracteres"} para atingir o minimo recomendado.`,
+      `${remainingCharacters} ${remainingCharacters === 1 ? "character is" : "characters are"} still needed to reach the recommended minimum.`,
       "error",
     );
   }
@@ -119,25 +119,25 @@ function getPasswordHelp(password: string) {
   const hasSymbol = /[^A-Za-z\d]/.test(password);
 
   if (!hasLetter || !hasNumber || !hasSymbol) {
-    return createHelpMessage("Para uma senha mais forte, combine letras, numeros e simbolos.", "error");
+    return createHelpMessage("For a stronger password, combine letters, numbers, and symbols.", "error");
   }
 
-  return createHelpMessage("A senha atende aos criterios principais informados.", "success");
+  return createHelpMessage("The password meets the main recommended criteria.", "success");
 }
 
 function getConfirmPasswordHelp(password: string, confirmPassword: string) {
   if (!confirmPassword) {
     return createHelpMessage(
-      "Repita a senha para confirmar que ela foi digitada corretamente.",
+      "Repeat the password to confirm it was typed correctly.",
       "neutral",
     );
   }
 
   if (confirmPassword !== password) {
-    return createHelpMessage("As senhas ainda nao coincidem.", "error");
+    return createHelpMessage("The passwords do not match yet.", "error");
   }
 
-  return createHelpMessage("As senhas coincidem.", "success");
+  return createHelpMessage("The passwords match.", "success");
 }
 
 function createHelpMessage(text: string, tone: RegisterHelpMessage["tone"]): RegisterHelpMessage {

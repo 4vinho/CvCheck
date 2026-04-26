@@ -6,15 +6,32 @@
           CvCheck
         </p>
         <h1 class="text-lg font-semibold text-foreground">
-          Area principal
+          Main area
         </h1>
       </div>
 
-      <nav class="flex items-center gap-2 text-sm text-muted-foreground">
-        <span class="rounded-full border border-border/70 px-3 py-1">Vue 3</span>
-        <span class="rounded-full border border-border/70 px-3 py-1">Tailwind CSS</span>
-        <span class="rounded-full border border-border/70 px-3 py-1">shadcn-vue</span>
-      </nav>
+      <Button variant="outline" :disabled="isSubmitting" @click="handleLogout">
+        {{ isSubmitting ? "Signing out..." : "Sign out" }}
+      </Button>
     </div>
   </header>
 </template>
+
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+import { useLogoutMutation } from "@/composables/auth/useLogoutMutation";
+import { Button } from "@/components/ui/button";
+
+const router = useRouter();
+const logoutMutation = useLogoutMutation();
+const isSubmitting = logoutMutation.isSubmitting;
+
+async function handleLogout() {
+  logoutMutation.reset();
+
+  try {
+    await logoutMutation.submit();
+    router.push({ name: "auth-login" });
+  } catch {}
+}
+</script>

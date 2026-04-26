@@ -24,7 +24,6 @@ const toasts = reactive<ToastRecord[]>([]);
 let nextToastId = 1;
 
 export function pushToast(input: ToastInput) {
-  console.log("[toast] pushToast:input", input);
   const toast: ToastRecord = {
     id: nextToastId++,
     variant: input.variant ?? "success",
@@ -34,7 +33,6 @@ export function pushToast(input: ToastInput) {
     descriptionList: input.descriptionList ?? [],
   };
 
-  console.log("[toast] pushToast:record", toast);
   toasts.push(toast);
 
   setTimeout(() => {
@@ -45,7 +43,6 @@ export function pushToast(input: ToastInput) {
 }
 
 export function dismissToast(id: number) {
-  console.log("[toast] dismissToast", id);
   const index = toasts.findIndex((toast) => toast.id === id);
 
   if (index >= 0) {

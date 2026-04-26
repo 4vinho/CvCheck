@@ -5,41 +5,40 @@
         <div class="space-y-4">
           <div class="space-y-3">
             <h2 class="max-w-2xl text-4xl font-semibold tracking-tight text-balance text-foreground">
-              Um espaco pronto para receber a experiencia autenticada.
+              A space ready to host the authenticated experience.
             </h2>
             <p class="max-w-2xl text-base leading-7 text-muted-foreground">
-              Esta area concentra a navegacao principal da aplicacao e prepara
-              o caminho para os proximos fluxos de conta, acesso e uso do
-              produto.
+              This area brings together the application's main navigation and prepares
+              the path for the next account, access, and product usage flows.
             </p>
           </div>
         </div>
 
         <div class="flex flex-wrap gap-3">
-          <Button>Acessar minha conta</Button>
-          <Button variant="outline">Explorar a plataforma</Button>
+          <Button>Access my account</Button>
+          <Button variant="outline">Explore the platform</Button>
         </div>
       </div>
 
       <Card class="border-border/80 bg-background/70">
         <CardHeader>
-          <CardTitle>Navegacao principal</CardTitle>
+          <CardTitle>Main navigation</CardTitle>
           <CardDescription>
-            Alguns caminhos principais ja estao organizados para a evolucao do produto.
+            Some key paths are already organized for the product's next steps.
           </CardDescription>
         </CardHeader>
         <CardContent class="space-y-3 text-sm text-muted-foreground">
           <div class="flex items-center justify-between rounded-xl border border-border/70 px-4 py-3">
             <span>/</span>
-            <span>redireciona para o cadastro</span>
+            <span>redirects to sign up</span>
           </div>
           <div class="flex items-center justify-between rounded-xl border border-border/70 px-4 py-3">
             <span>/app</span>
-            <span>area principal da aplicacao</span>
+            <span>main application area</span>
           </div>
           <div class="flex items-center justify-between rounded-xl border border-border/70 px-4 py-3">
             <span>/*</span>
-            <span>pagina nao encontrada</span>
+            <span>page not found</span>
           </div>
         </CardContent>
       </Card>
@@ -72,19 +71,19 @@ import { Separator } from "@/components/ui/separator";
 
 const baselineItems = [
   {
-    title: "Experiencia",
-    description: "Fluxos organizados com clareza",
-    body: "A estrutura separa area publica, area autenticada e componentes reutilizaveis para manter a navegacao consistente.",
+    title: "Experience",
+    description: "Flows organized with clarity",
+    body: "The structure separates the public area, authenticated area, and reusable components to keep navigation consistent.",
   },
   {
-    title: "Componentes",
-    description: "Base visual reaproveitavel",
-    body: "Cards, botoes e elementos de formulario seguem a mesma linguagem visual para acelerar a evolucao das proximas telas.",
+    title: "Components",
+    description: "Reusable visual foundation",
+    body: "Cards, buttons, and form elements share the same visual language to speed up the next screens.",
   },
   {
-    title: "Evolucao",
-    description: "Preparado para os proximos passos",
-    body: "A navegacao atual abre espaco para login, confirmacao de email e demais recursos da conta sem reestruturar a interface.",
+    title: "Evolution",
+    description: "Ready for the next steps",
+    body: "The current navigation leaves room for sign in, email confirmation, and the rest of the account features without restructuring the interface.",
   },
 ];
 </script>

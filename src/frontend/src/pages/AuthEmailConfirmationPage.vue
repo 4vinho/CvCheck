@@ -1,17 +1,17 @@
 <template>
   <section class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
     <AuthPanel
-      eyebrow="Confirmacao de email"
-      title="Confirme o codigo enviado para liberar sua conta."
-      description="Use o email principal da conta e o codigo de 6 caracteres recebido por email."
+      eyebrow="Email confirmation"
+      title="Confirm the code that was sent to unlock your account."
+      description="Use your primary account email and the 6-character code sent by email."
     >
       <template #header>
         <div class="grid gap-3 rounded-[1.5rem] border border-cyan-200 bg-cyan-50/90 p-5 text-sm leading-6 text-cyan-950">
           <p class="font-semibold uppercase tracking-[0.24em] text-cyan-700">
-            Antes de continuar
+            Before you continue
           </p>
           <p>
-            A confirmacao libera o acesso completo da conta local e invalida codigos antigos que tenham sido substituidos por um novo reenvio.
+            Confirmation unlocks full access to your local account and invalidates older codes that were replaced by a newer resend.
           </p>
         </div>
       </template>
@@ -25,12 +25,12 @@
             type="email"
             inputmode="email"
             autocomplete="email"
-            placeholder="voce@empresa.com"
+            placeholder="you@company.com"
             :disabled="isSubmitting"
             :aria-invalid="Boolean(errors.email)"
           />
           <p class="text-sm text-muted-foreground">
-            Use o mesmo endereco informado no cadastro.
+            Use the same address provided during sign up.
           </p>
           <p v-if="errors.email" class="text-sm font-medium text-red-600">
             {{ errors.email }}
@@ -38,7 +38,7 @@
         </div>
 
         <div class="space-y-2">
-          <Label for="code">Codigo de confirmacao</Label>
+          <Label for="code">Confirmation code</Label>
           <Input
             id="code"
             v-model="form.code"
@@ -53,7 +53,7 @@
             @update:model-value="handleCodeInput"
           />
           <p class="text-sm text-muted-foreground">
-            O codigo tem 6 caracteres e pode incluir letras e numeros.
+            The code has 6 characters and may include letters and numbers.
           </p>
           <p v-if="errors.code" class="text-sm font-medium text-red-600">
             {{ errors.code }}
@@ -62,13 +62,13 @@
 
         <div class="flex flex-wrap gap-3 pt-2">
           <Button type="submit" size="lg" :disabled="isSubmitting">
-            {{ isSubmitting ? "Confirmando..." : "Confirmar email" }}
+            {{ isSubmitting ? "Confirming..." : "Confirm email" }}
           </Button>
           <RouterLink
             :to="{ name: 'auth-register-pending', query: { email: form.email || undefined } }"
             :class="buttonVariants({ variant: 'outline', size: 'lg' })"
           >
-            Voltar para reenvio
+            Back to resend
           </RouterLink>
         </div>
       </form>
@@ -76,10 +76,10 @@
       <div v-else class="grid gap-4">
         <div class="flex flex-wrap gap-3">
           <RouterLink :to="{ name: 'auth-login', query: { email: confirmedEmail } }" :class="buttonVariants({ size: 'lg' })">
-            Ir para login
+            Go to sign in
           </RouterLink>
           <RouterLink :to="{ name: 'auth-register' }" :class="buttonVariants({ variant: 'outline', size: 'lg' })">
-            Criar outra conta
+            Create another account
           </RouterLink>
         </div>
       </div>
@@ -87,19 +87,19 @@
 
     <div class="grid gap-6">
       <AuthInfoCard
-        badge="Orientacao"
-        title="Se o codigo falhar, reenvie antes de tentar de novo."
-        description="Codigos expirados ou substituidos deixam de validar. Quando isso acontecer, gere um novo envio e use apenas o codigo mais recente."
+        badge="Guidance"
+        title="If the code fails, resend it before trying again."
+        description="Expired or replaced codes are no longer valid. When that happens, request a new code and use only the most recent one."
       >
         <div class="grid gap-3 text-sm leading-6 text-muted-foreground">
           <div class="rounded-2xl border border-border/70 px-4 py-3">
-            Revise o email digitado para garantir que ele corresponde ao cadastro local.
+            Review the email you entered to make sure it matches the local account registration.
           </div>
           <div class="rounded-2xl border border-border/70 px-4 py-3">
-            Copie o codigo exatamente como foi recebido e use apenas o envio mais recente.
+            Copy the code exactly as received and use only the most recent delivery.
           </div>
           <div class="rounded-2xl border border-dashed border-border bg-background/70 px-4 py-3">
-            Se ainda nao recebeu o email, volte para a etapa de reenvio da confirmacao.
+            If you still have not received the email, go back to the confirmation resend step.
           </div>
         </div>
       </AuthInfoCard>

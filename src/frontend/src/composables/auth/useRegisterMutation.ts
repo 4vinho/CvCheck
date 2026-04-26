@@ -14,12 +14,12 @@ export function useRegisterMutation() {
     mutationFn: (values: RegisterFormValues) => authService.register(values),
     meta: {
       successToast: {
-        title: "Conta criada",
-        message: "Cadastro concluido. Agora confirme o codigo enviado para o seu email.",
+        title: "Account created",
+        message: "Sign up completed. Now confirm the code sent to your email.",
       },
       errorToast: {
-        title: "Nao foi possivel criar a conta",
-        message: "Nao foi possivel criar a conta.",
+        title: "Could not create account",
+        message: "Could not create account.",
       },
     },
   });

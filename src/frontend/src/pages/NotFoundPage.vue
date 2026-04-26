@@ -5,14 +5,14 @@
         <p class="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">
           404
         </p>
-        <CardTitle class="text-3xl">Pagina nao encontrada</CardTitle>
+        <CardTitle class="text-3xl">Page not found</CardTitle>
         <CardDescription class="text-base">
-          O endereco informado nao corresponde a uma pagina disponivel.
+          The requested address does not match an available page.
         </CardDescription>
       </CardHeader>
       <CardContent class="flex justify-center">
         <RouterLink to="/app">
-          <Button as="span">Voltar para /app</Button>
+          <Button as="span">Back to /app</Button>
         </RouterLink>
       </CardContent>
     </Card>

@@ -36,7 +36,7 @@ export class ApiValidationError<TField extends string = string> extends Error {
 export class PendingEmailConfirmationError extends Error {
   email: string;
 
-  constructor(email: string, message = "Confirme seu email para concluir o acesso a conta.") {
+  constructor(email: string, message = "Confirm your email to complete account access.") {
     super(message);
     this.name = "PendingEmailConfirmationError";
     this.email = email;

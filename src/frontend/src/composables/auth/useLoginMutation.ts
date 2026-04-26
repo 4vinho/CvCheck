@@ -14,12 +14,12 @@ export function useLoginMutation() {
     mutationFn: (values: LoginFormValues) => authService.login(values),
     meta: {
       successToast: {
-        title: "Login concluido",
-        message: "Sua conta autenticada esta pronta para os proximos fluxos.",
+        title: "Sign in completed",
+        message: "Your authenticated account is ready for the next flows.",
       },
       errorToast: {
-        title: "Nao foi possivel entrar",
-        message: "Nao foi possivel entrar.",
+        title: "Could not sign in",
+        message: "Could not sign in.",
       },
     },
   });

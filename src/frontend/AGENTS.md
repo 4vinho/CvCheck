@@ -18,6 +18,8 @@ Use TypeScript, Vue Single File Components, and 2-space indentation in templates
 
 Use `PascalCase` for Vue component filenames (`AppHeader.vue`, `NotFoundPage.vue`), `camelCase` for variables and functions, and kebab-case route names only when exposed as router identifiers. Keep low-level reusable primitives in `src/components/ui`; keep feature-specific composition in `pages`, `layouts`, or `components/shared`.
 
+All user-facing product copy must be written in English. This includes page titles, labels, placeholders, helper text, alerts, toasts, validation messages, empty states, navigation labels, and public-facing route paths. Do not introduce Portuguese text in the UI.
+
 For remote data, use `@tanstack/vue-query` as the default pattern:
 
 - `pages` and UI components must not call `fetch` or backend endpoints directly.

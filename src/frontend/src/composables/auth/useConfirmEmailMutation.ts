@@ -17,12 +17,12 @@ export function useConfirmEmailMutation() {
     mutationFn: (values: EmailConfirmationFormValues) => authService.confirmEmail(values),
     meta: {
       successToast: {
-        title: "Conta liberada",
-        message: "Email confirmado com sucesso. Agora o login passa a aceitar esta conta normalmente.",
+        title: "Account unlocked",
+        message: "Email confirmed successfully. Sign in now works normally for this account.",
       },
       errorToast: {
-        title: "Nao foi possivel confirmar o email",
-        message: "Nao foi possivel confirmar o email.",
+        title: "Could not confirm email",
+        message: "Could not confirm email.",
       },
     },
   });

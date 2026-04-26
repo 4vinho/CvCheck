@@ -13,29 +13,29 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/auth/cadastro",
+      redirect: "/auth/register",
     },
     {
       path: "/auth",
       component: AuthShell,
       children: [
         {
-          path: "entrar",
+          path: "login",
           name: "auth-login",
           component: AuthLoginPage,
         },
         {
-          path: "cadastro",
+          path: "register",
           name: "auth-register",
           component: AuthRegisterPage,
         },
         {
-          path: "cadastro/pendente",
+          path: "register/pending",
           name: "auth-register-pending",
           component: AuthRegisterPendingPage,
         },
         {
-          path: "confirmar-email",
+          path: "confirm-email",
           name: "auth-email-confirmation",
           component: AuthEmailConfirmationPage,
         },

@@ -1,13 +1,13 @@
 <template>
   <section class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
     <AuthPanel
-      eyebrow="Acesso com email"
-      title="Crie sua conta local com email e senha."
-      description="Use seu email para criar uma conta e acompanhar o acesso com mais seguranca."
+      eyebrow="Email access"
+      title="Create your local account with email and password."
+      description="Use your email to create an account and manage access more securely."
     >
       <template #header>
         <div class="rounded-2xl border border-border/70 bg-background/70 p-4 text-sm leading-6 text-muted-foreground">
-          O email sera o identificador principal da conta. Ate a confirmacao, o acesso pleno continua bloqueado.
+          Your email will be the primary account identifier. Full access stays locked until confirmation is complete.
         </div>
       </template>
 
@@ -20,7 +20,7 @@
             type="email"
             inputmode="email"
             autocomplete="email"
-            placeholder="voce@empresa.com"
+            placeholder="you@company.com"
             :disabled="isSubmitting"
             :aria-invalid="Boolean(errors.email)"
           />
@@ -33,14 +33,14 @@
         </div>
 
         <div class="space-y-2">
-          <Label for="password">Senha</Label>
+          <Label for="password">Password</Label>
           <div class="relative">
             <Input
               id="password"
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               autocomplete="new-password"
-              placeholder="Defina uma senha"
+              placeholder="Create a password"
               :disabled="isSubmitting"
               :aria-invalid="Boolean(errors.password)"
               class="pr-24"
@@ -49,8 +49,8 @@
               type="button"
               class="absolute inset-y-0 right-3 my-auto inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               :disabled="isSubmitting"
-              :aria-label="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
-              :title="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+              :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              :title="showPassword ? 'Hide password' : 'Show password'"
               @click="showPassword = !showPassword"
             >
               <EyeOff v-if="showPassword" class="h-4 w-4" aria-hidden="true" />
@@ -66,14 +66,14 @@
         </div>
 
         <div class="space-y-2">
-          <Label for="confirmPassword">Confirmar senha</Label>
+          <Label for="confirmPassword">Confirm password</Label>
           <div class="relative">
             <Input
               id="confirmPassword"
               v-model="form.confirmPassword"
               :type="showConfirmPassword ? 'text' : 'password'"
               autocomplete="new-password"
-              placeholder="Repita a senha"
+              placeholder="Repeat your password"
               :disabled="isSubmitting"
               :aria-invalid="Boolean(errors.confirmPassword)"
               class="pr-24"
@@ -82,8 +82,8 @@
               type="button"
               class="absolute inset-y-0 right-3 my-auto inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               :disabled="isSubmitting"
-              :aria-label="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'"
-              :title="showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'"
+              :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'"
+              :title="showConfirmPassword ? 'Hide password' : 'Show password'"
               @click="showConfirmPassword = !showConfirmPassword"
             >
               <EyeOff v-if="showConfirmPassword" class="h-4 w-4" aria-hidden="true" />
@@ -100,7 +100,7 @@
 
         <div class="flex flex-wrap gap-3 pt-2">
           <Button type="submit" size="lg" :disabled="isSubmitting">
-            {{ isSubmitting ? "Criando conta..." : "Criar conta" }}
+            {{ isSubmitting ? "Creating account..." : "Create account" }}
           </Button>
         </div>
       </form>
@@ -108,9 +108,9 @@
 
     <div class="grid gap-6">
       <AuthInfoCard
-        badge="Seguranca"
-        title="Sua conta comeca pelo email"
-        description="Depois do cadastro, enviaremos a confirmacao para o endereco informado. Ate esse passo ser concluido, alguns recursos permanecem indisponiveis."
+        badge="Security"
+        title="Your account starts with email"
+        description="After sign up, we will send a confirmation message to the address you provided. Some features stay unavailable until that step is complete."
       >
         <ul class="space-y-3 text-sm leading-6 text-muted-foreground">
           <li
@@ -123,7 +123,7 @@
         </ul>
 
         <div class="rounded-2xl border border-dashed border-border bg-background/70 px-4 py-3 text-sm leading-6 text-muted-foreground">
-          Apos o cadastro, a conta segue em estado pendente ate a confirmacao por email.
+          After sign up, the account remains pending until email confirmation is completed.
         </div>
       </AuthInfoCard>
     </div>

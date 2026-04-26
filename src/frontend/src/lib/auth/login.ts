@@ -22,13 +22,13 @@ export function validateLoginForm(values: LoginFormValues): LoginFormErrors {
   const normalizedEmail = values.email.trim();
 
   if (!normalizedEmail) {
-    errors.email = "Informe o email da conta.";
+    errors.email = "Enter the account email.";
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-    errors.email = "Informe um email valido.";
+    errors.email = "Enter a valid email.";
   }
 
   if (!values.password) {
-    errors.password = "Informe a senha da conta.";
+    errors.password = "Enter the account password.";
   }
 
   return errors;

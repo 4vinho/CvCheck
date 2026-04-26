@@ -29,15 +29,15 @@ export function validateEmailConfirmationForm(
   const normalizedCode = normalizeConfirmationCode(values.code);
 
   if (!normalizedEmail) {
-    errors.email = "Informe o email da conta.";
+    errors.email = "Enter the account email.";
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-    errors.email = "Informe um email valido.";
+    errors.email = "Enter a valid email.";
   }
 
   if (!normalizedCode) {
-    errors.code = "Informe o codigo recebido por email.";
+    errors.code = "Enter the code you received by email.";
   } else if (!/^[A-Z0-9]{6}$/.test(normalizedCode)) {
-    errors.code = "Use o codigo com 6 caracteres enviado para o seu email.";
+    errors.code = "Use the 6-character code sent to your email.";
   }
 
   return errors;

@@ -1,13 +1,13 @@
 <template>
   <section class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
     <AuthPanel
-      eyebrow="Acesso com email"
-      title="Entre com a conta que ja confirmou o email."
-      description="Use o email principal da conta para acessar a area autenticada com seguranca."
+      eyebrow="Email access"
+      title="Sign in with the account that already confirmed its email."
+      description="Use your primary account email to access the authenticated area securely."
     >
       <template #header>
         <div class="rounded-2xl border border-border/70 bg-background/70 p-4 text-sm leading-6 text-muted-foreground">
-          Contas locais ainda pendentes de confirmacao precisam concluir esse passo antes do acesso completo.
+          Local accounts that are still waiting for confirmation must complete that step before full access is granted.
         </div>
       </template>
 
@@ -20,12 +20,12 @@
             type="email"
             inputmode="email"
             autocomplete="email"
-            placeholder="voce@empresa.com"
+            placeholder="you@company.com"
             :disabled="isSubmitting"
             :aria-invalid="Boolean(errors.email)"
           />
           <p class="text-sm text-muted-foreground">
-            O email e o identificador principal da sua conta.
+            Your email is the primary identifier for your account.
           </p>
           <p v-if="errors.email" class="text-sm font-medium text-red-600">
             {{ errors.email }}
@@ -33,14 +33,14 @@
         </div>
 
         <div class="space-y-2">
-          <Label for="password">Senha</Label>
+          <Label for="password">Password</Label>
           <div class="relative">
             <Input
               id="password"
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               autocomplete="current-password"
-              placeholder="Informe sua senha"
+              placeholder="Enter your password"
               :disabled="isSubmitting"
               :aria-invalid="Boolean(errors.password)"
               class="pr-24"
@@ -49,8 +49,8 @@
               type="button"
               class="absolute inset-y-0 right-3 my-auto inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               :disabled="isSubmitting"
-              :aria-label="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
-              :title="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+              :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              :title="showPassword ? 'Hide password' : 'Show password'"
               @click="showPassword = !showPassword"
             >
               <EyeOff v-if="showPassword" class="h-4 w-4" aria-hidden="true" />
@@ -58,7 +58,7 @@
             </button>
           </div>
           <p class="text-sm text-muted-foreground">
-            O acesso so e liberado para contas com email ja confirmado.
+            Access is only available for accounts with a confirmed email.
           </p>
           <p v-if="errors.password" class="text-sm font-medium text-red-600">
             {{ errors.password }}
@@ -67,13 +67,13 @@
 
         <div class="flex flex-wrap gap-3 pt-2">
           <Button type="submit" size="lg" :disabled="isSubmitting">
-            {{ isSubmitting ? "Entrando..." : "Entrar" }}
+            {{ isSubmitting ? "Signing in..." : "Sign in" }}
           </Button>
           <RouterLink
             :to="{ name: 'auth-register' }"
             :class="buttonVariants({ variant: 'outline', size: 'lg' })"
           >
-            Criar conta
+            Create account
           </RouterLink>
         </div>
       </form>
@@ -81,19 +81,19 @@
 
     <div class="grid gap-6">
       <AuthInfoCard
-        badge="Confirmacao"
-        title="Se a conta estiver pendente, o proprio fluxo te orienta."
-        description="Quando o login identificar que falta confirmar o email, voce segue direto para a etapa de reenvio e validacao do codigo."
+        badge="Confirmation"
+        title="If the account is still pending, the flow guides you."
+        description="When sign in detects a missing email confirmation, you move directly to the resend and code verification step."
       >
         <div class="grid gap-3 text-sm leading-6 text-muted-foreground">
           <div class="rounded-2xl border border-border/70 px-4 py-3">
-            Use o mesmo email informado no cadastro local.
+            Use the same email address provided during local sign up.
           </div>
           <div class="rounded-2xl border border-border/70 px-4 py-3">
-            Se a confirmacao ainda estiver pendente, voce podera reenviar o codigo.
+            If confirmation is still pending, you can resend the code.
           </div>
           <div class="rounded-2xl border border-dashed border-border bg-background/70 px-4 py-3">
-            Depois da confirmacao, o login passa a liberar o acesso pleno a conta.
+            After confirmation, sign in unlocks full account access.
           </div>
         </div>
       </AuthInfoCard>

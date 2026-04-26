@@ -18,12 +18,6 @@ function resolveToastMessage(descriptor: MutationToastDescriptor, context: {
 export const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     onSuccess: (data, variables, _context, mutation) => {
-      console.log("[queryClient] mutation success", {
-        mutationKey: mutation.options.mutationKey,
-        data,
-        variables,
-        meta: mutation.meta,
-      });
       const meta = mutation.meta as MutationToastMeta | undefined;
 
       if (!meta?.successToast) {
@@ -37,20 +31,7 @@ export const queryClient = new QueryClient({
       });
     },
     onError: (error, variables, _context, mutation) => {
-      console.error("[queryClient] mutation error", {
-        mutationKey: mutation.options.mutationKey,
-        error,
-        variables,
-        meta: mutation.meta,
-        isValidationError: error instanceof ApiValidationError,
-      });
-
       if (error instanceof ApiValidationError) {
-        console.error("[queryClient] validation toast payload", {
-          title: error.title,
-          details: error.details,
-          fieldErrors: error.fieldErrors,
-        });
         pushToast({
           variant: "error",
           title: error.title,

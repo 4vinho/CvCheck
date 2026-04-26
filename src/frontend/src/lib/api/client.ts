@@ -19,9 +19,12 @@ async function request<TResponse>(path: string, init: RequestInit): Promise<TRes
   let response: Response;
 
   try {
-    response = await fetch(buildApiUrl(path), init);
+    response = await fetch(buildApiUrl(path), {
+      credentials: "include",
+      ...init,
+    });
   } catch {
-    throw new ApiRequestError("Nao foi possivel conectar ao servico agora. Tente novamente em instantes.");
+    throw new ApiRequestError("Unable to connect to the service right now. Please try again shortly.");
   }
 
   const body = await parseResponseBody(response);
@@ -34,13 +37,16 @@ async function request<TResponse>(path: string, init: RequestInit): Promise<TRes
 }
 
 export const apiClient = {
-  post<TResponse>(path: string, body: unknown) {
+  post<TResponse = unknown>(path: string, body?: unknown) {
     return request<TResponse>(path, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
+      headers: body === undefined
+        ? undefined
+        : {
+            "Content-Type": "application/json",
+          },
+      body: body === undefined ? undefined : JSON.stringify(body),
     });
   },
 };
+

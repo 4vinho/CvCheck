@@ -43,6 +43,12 @@ export interface ConfirmEmailResponse {
   status: string;
 }
 
+export interface EmailConfirmationResendAvailabilityResponse {
+  email: string;
+  canResend: boolean;
+  remainingSeconds: number;
+}
+
 interface ValidationProblemDetailsPayload {
   errors?: Record<string, string[] | undefined>;
   title?: string;
@@ -79,7 +85,6 @@ function normalizeValidationError<TFieldName extends string>(
   payload: ValidationProblemDetailsPayload,
   fieldMap: Record<string, TFieldName>,
 ) {
-  console.log("[auth.service] normalizeValidationError:payload", payload);
   const fieldErrors: ApiFieldErrors<TFieldName> = {};
   const detailMessages: string[] = [];
 
@@ -97,12 +102,6 @@ function normalizeValidationError<TFieldName extends string>(
 
     detailMessages.push(...messages);
   }
-
-  console.log("[auth.service] normalizeValidationError:result", {
-    title: payload.title ?? "Validation error",
-    fieldErrors,
-    detailMessages,
-  });
 
   return new ApiValidationError<TFieldName>(
     fieldErrors,
@@ -123,13 +122,12 @@ export const authService = {
       const response = await apiClient.post<RegisterResponse>("/auth/register", payload);
 
       if (!response.requiresEmailConfirmation || response.status !== "pending_email_confirmation") {
-        throw new ApiRequestError("Nao foi possivel concluir o cadastro agora. Tente novamente em instantes.");
+        throw new ApiRequestError("Could not complete sign up right now. Please try again shortly.");
       }
 
       return response;
     } catch (error) {
       if (error instanceof ApiHttpError && error.status === 400) {
-        console.error("[auth.service] register:400", error.body);
         throw normalizeValidationError((error.body ?? {}) as ValidationProblemDetailsPayload, registerErrorFieldMap);
       }
 
@@ -137,7 +135,7 @@ export const authService = {
         throw error;
       }
 
-      throw new ApiRequestError("Nao foi possivel concluir o cadastro agora. Tente novamente em instantes.");
+      throw new ApiRequestError("Could not complete sign up right now. Please try again shortly.");
     }
   },
   async login(values: LoginFormValues): Promise<LoginResponse> {
@@ -150,13 +148,12 @@ export const authService = {
       const response = await apiClient.post<LoginResponse>("/auth/login", payload);
 
       if (response.requiresEmailConfirmation || response.status !== "authenticated") {
-        throw new ApiRequestError("Nao foi possivel concluir o acesso agora. Tente novamente em instantes.");
+        throw new ApiRequestError("Could not complete sign in right now. Please try again shortly.");
       }
 
       return response;
     } catch (error) {
       if (error instanceof ApiHttpError && error.status === 403) {
-        console.error("[auth.service] login:403", error.body);
         const response = (error.body ?? {}) as Partial<LoginResponse>;
 
         if (
@@ -169,7 +166,6 @@ export const authService = {
       }
 
       if (error instanceof ApiHttpError && error.status === 400) {
-        console.error("[auth.service] login:400", error.body);
         throw normalizeValidationError((error.body ?? {}) as ValidationProblemDetailsPayload, loginErrorFieldMap);
       }
 
@@ -177,7 +173,7 @@ export const authService = {
         throw error;
       }
 
-      throw new ApiRequestError("Nao foi possivel concluir o acesso agora. Tente novamente em instantes.");
+      throw new ApiRequestError("Could not complete sign in right now. Please try again shortly.");
     }
   },
   async resendEmailConfirmation(email: string): Promise<ResendEmailConfirmationResponse> {
@@ -187,13 +183,12 @@ export const authService = {
       });
 
       if (response.status !== "pending_email_confirmation") {
-        throw new ApiRequestError("Nao foi possivel reenviar a confirmacao agora. Tente novamente em instantes.");
+        throw new ApiRequestError("Could not resend confirmation right now. Please try again shortly.");
       }
 
       return response;
     } catch (error) {
       if (error instanceof ApiHttpError && error.status === 400) {
-        console.error("[auth.service] resend:400", error.body);
         throw normalizeValidationError(
           (error.body ?? {}) as ValidationProblemDetailsPayload,
           emailConfirmationErrorFieldMap,
@@ -204,7 +199,41 @@ export const authService = {
         throw error;
       }
 
-      throw new ApiRequestError("Nao foi possivel reenviar a confirmacao agora. Tente novamente em instantes.");
+      throw new ApiRequestError("Could not resend confirmation right now. Please try again shortly.");
+    }
+  },
+  async getEmailConfirmationResendAvailability(email: string): Promise<EmailConfirmationResendAvailabilityResponse> {
+    try {
+      return await apiClient.post<EmailConfirmationResendAvailabilityResponse>(
+        "/auth/email-confirmation/resend-availability",
+        {
+          email: email.trim(),
+        },
+      );
+    } catch (error) {
+      if (error instanceof ApiHttpError && error.status === 400) {
+        throw normalizeValidationError(
+          (error.body ?? {}) as ValidationProblemDetailsPayload,
+          emailConfirmationErrorFieldMap,
+        );
+      }
+
+      if (error instanceof ApiRequestError) {
+        throw error;
+      }
+
+      throw new ApiRequestError("Could not check resend availability right now. Please try again shortly.");
+    }
+  },
+  async logout(): Promise<void> {
+    try {
+      await apiClient.post("/auth/logout");
+    } catch (error) {
+      if (error instanceof ApiRequestError) {
+        throw error;
+      }
+
+      throw new ApiRequestError("Could not sign out right now. Please try again shortly.");
     }
   },
   async confirmEmail(values: EmailConfirmationFormValues): Promise<ConfirmEmailResponse> {
@@ -215,13 +244,12 @@ export const authService = {
       });
 
       if (response.status !== "confirmed") {
-        throw new ApiRequestError("Nao foi possivel confirmar o email agora. Tente novamente em instantes.");
+        throw new ApiRequestError("Could not confirm email right now. Please try again shortly.");
       }
 
       return response;
     } catch (error) {
       if (error instanceof ApiHttpError && error.status === 400) {
-        console.error("[auth.service] confirm:400", error.body);
         throw normalizeValidationError(
           (error.body ?? {}) as ValidationProblemDetailsPayload,
           emailConfirmationErrorFieldMap,
@@ -232,7 +260,7 @@ export const authService = {
         throw error;
       }
 
-      throw new ApiRequestError("Nao foi possivel confirmar o email agora. Tente novamente em instantes.");
+      throw new ApiRequestError("Could not confirm email right now. Please try again shortly.");
     }
   },
 };
