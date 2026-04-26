@@ -7,6 +7,13 @@ export class ApiRequestError extends Error {
   }
 }
 
+export class ApiUnauthorizedError extends ApiRequestError {
+  constructor(message = "Unauthorized.") {
+    super(message);
+    this.name = "ApiUnauthorizedError";
+  }
+}
+
 export class ApiHttpError extends Error {
   status: number;
   body: unknown;

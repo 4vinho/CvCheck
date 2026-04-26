@@ -1,7 +1,7 @@
 import { computed } from "vue";
-import { useMutation } from "@tanstack/vue-query";
 import { ApiRequestError, ApiValidationError, PendingEmailConfirmationError } from "@/lib/api/errors";
 import type { LoginFormErrors, LoginFormValues } from "@/lib/auth/login";
+import { useApi } from "@/composables/useApi";
 import { authService } from "@/services/auth/auth.service";
 
 const authMutationKeys = {
@@ -9,9 +9,14 @@ const authMutationKeys = {
 };
 
 export function useLoginMutation() {
-  const mutation = useMutation({
+  const { markAuthenticated, useApiMutation } = useApi();
+
+  const mutation = useApiMutation({
     mutationKey: authMutationKeys.login,
     mutationFn: (values: LoginFormValues) => authService.login(values),
+    onSuccess: () => {
+      markAuthenticated();
+    },
     meta: {
       successToast: {
         title: "Sign in completed",

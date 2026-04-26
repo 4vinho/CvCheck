@@ -1,6 +1,6 @@
 import { computed } from "vue";
-import { useMutation } from "@tanstack/vue-query";
 import { ApiRequestError, ApiValidationError } from "@/lib/api/errors";
+import { useApi } from "@/composables/useApi";
 import type { ResendEmailConfirmationResponse } from "@/services/auth/auth.service";
 import { authService } from "@/services/auth/auth.service";
 
@@ -9,7 +9,9 @@ const authMutationKeys = {
 };
 
 export function useResendEmailConfirmationMutation() {
-  const mutation = useMutation({
+  const { useApiMutation } = useApi();
+
+  const mutation = useApiMutation({
     mutationKey: authMutationKeys.resendEmailConfirmation,
     mutationFn: (email: string) => authService.resendEmailConfirmation(email),
     meta: {

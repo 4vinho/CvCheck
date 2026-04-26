@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { hasApiSession } from "@/lib/api/apiSession";
 import AppShell from "@/layouts/AppShell.vue";
 import AppHomePage from "@/pages/AppHomePage.vue";
 import AuthEmailConfirmationPage from "@/pages/AuthEmailConfirmationPage.vue";
@@ -44,6 +45,9 @@ const router = createRouter({
     {
       path: "/app",
       component: AppShell,
+      meta: {
+        requiresAuth: true,
+      },
       children: [
         {
           path: "",
@@ -58,6 +62,19 @@ const router = createRouter({
       component: NotFoundPage,
     },
   ],
+});
+
+router.beforeEach((to) => {
+  if (to.meta.requiresAuth && !hasApiSession()) {
+    return {
+      name: "auth-login",
+      query: {
+        redirect: to.fullPath,
+      },
+    };
+  }
+
+  return true;
 });
 
 export default router;

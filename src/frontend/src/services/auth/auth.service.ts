@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api/client";
+import { apiService } from "@/lib/api/apiService";
 import {
   ApiHttpError,
   ApiRequestError,
@@ -119,7 +119,7 @@ export const authService = {
     };
 
     try {
-      const response = await apiClient.post<RegisterResponse>("/auth/register", payload);
+      const response = await apiService.post<RegisterResponse>("/auth/register", payload);
 
       if (!response.requiresEmailConfirmation || response.status !== "pending_email_confirmation") {
         throw new ApiRequestError("Could not complete sign up right now. Please try again shortly.");
@@ -145,7 +145,7 @@ export const authService = {
     };
 
     try {
-      const response = await apiClient.post<LoginResponse>("/auth/login", payload);
+      const response = await apiService.post<LoginResponse>("/auth/login", payload);
 
       if (response.requiresEmailConfirmation || response.status !== "authenticated") {
         throw new ApiRequestError("Could not complete sign in right now. Please try again shortly.");
@@ -178,7 +178,7 @@ export const authService = {
   },
   async resendEmailConfirmation(email: string): Promise<ResendEmailConfirmationResponse> {
     try {
-      const response = await apiClient.post<ResendEmailConfirmationResponse>("/auth/email-confirmation/resend", {
+      const response = await apiService.post<ResendEmailConfirmationResponse>("/auth/email-confirmation/resend", {
         email: email.trim(),
       });
 
@@ -204,7 +204,7 @@ export const authService = {
   },
   async getEmailConfirmationResendAvailability(email: string): Promise<EmailConfirmationResendAvailabilityResponse> {
     try {
-      return await apiClient.post<EmailConfirmationResendAvailabilityResponse>(
+      return await apiService.post<EmailConfirmationResendAvailabilityResponse>(
         "/auth/email-confirmation/resend-availability",
         {
           email: email.trim(),
@@ -227,7 +227,7 @@ export const authService = {
   },
   async logout(): Promise<void> {
     try {
-      await apiClient.post("/auth/logout");
+      await apiService.post("/auth/logout");
     } catch (error) {
       if (error instanceof ApiRequestError) {
         throw error;
@@ -238,7 +238,7 @@ export const authService = {
   },
   async confirmEmail(values: EmailConfirmationFormValues): Promise<ConfirmEmailResponse> {
     try {
-      const response = await apiClient.post<ConfirmEmailResponse>("/auth/email-confirmation/confirm", {
+      const response = await apiService.post<ConfirmEmailResponse>("/auth/email-confirmation/confirm", {
         email: values.email.trim(),
         code: normalizeConfirmationCode(values.code),
       });

@@ -104,7 +104,7 @@
 <script setup lang="ts">
 import { Eye, EyeOff } from "lucide-vue-next";
 import { reactive, ref } from "vue";
-import { RouterLink, useRouter } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import AuthInfoCard from "@/components/shared/AuthInfoCard.vue";
 import AuthPanel from "@/components/shared/AuthPanel.vue";
 import { useLoginMutation } from "@/composables/auth/useLoginMutation";
@@ -114,6 +114,7 @@ import { Label } from "@/components/ui/label";
 import { clearLoginFormErrors, createLoginFormValues, validateLoginForm, type LoginFormErrors } from "@/lib/auth/login";
 
 const router = useRouter();
+const route = useRoute();
 
 const form = reactive(createLoginFormValues());
 const errors = reactive<LoginFormErrors>({});
@@ -136,6 +137,15 @@ async function handleSubmit() {
 
   try {
     await loginMutation.submit(form);
+    const redirectTarget = typeof route.query.redirect === "string" && route.query.redirect.trim()
+      ? route.query.redirect
+      : undefined;
+
+    if (redirectTarget) {
+      router.push(redirectTarget);
+      return;
+    }
+
     router.push({ name: "app-home" });
   } catch {
     const pendingEmail = loginMutation.pendingEmail.value;

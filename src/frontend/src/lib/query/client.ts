@@ -1,5 +1,5 @@
 import { MutationCache, QueryClient, VueQueryPlugin } from "@tanstack/vue-query";
-import { ApiValidationError } from "@/lib/api/errors";
+import { ApiUnauthorizedError, ApiValidationError } from "@/lib/api/errors";
 import type { MutationToastDescriptor, MutationToastMeta } from "@/lib/query/mutationToast";
 import { pushToast } from "@/lib/toast/toast";
 
@@ -31,6 +31,10 @@ export const queryClient = new QueryClient({
       });
     },
     onError: (error, variables, _context, mutation) => {
+      if (error instanceof ApiUnauthorizedError) {
+        return;
+      }
+
       if (error instanceof ApiValidationError) {
         pushToast({
           variant: "error",

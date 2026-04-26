@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/vue-query";
+import { useApi } from "@/composables/useApi";
 import { authService } from "@/services/auth/auth.service";
 
 const authMutationKeys = {
@@ -6,9 +6,14 @@ const authMutationKeys = {
 };
 
 export function useLogoutMutation() {
-  const mutation = useMutation({
+  const { markUnauthenticated, useApiMutation } = useApi();
+
+  const mutation = useApiMutation({
     mutationKey: authMutationKeys.logout,
     mutationFn: () => authService.logout(),
+    onSuccess: () => {
+      markUnauthenticated();
+    },
     meta: {
       successToast: {
         title: "Signed out",

@@ -1,10 +1,10 @@
 import { computed } from "vue";
-import { useMutation } from "@tanstack/vue-query";
 import { ApiRequestError, ApiValidationError } from "@/lib/api/errors";
 import type {
   EmailConfirmationFormErrors,
   EmailConfirmationFormValues,
 } from "@/lib/auth/emailConfirmation";
+import { useApi } from "@/composables/useApi";
 import { authService } from "@/services/auth/auth.service";
 
 const authMutationKeys = {
@@ -12,7 +12,9 @@ const authMutationKeys = {
 };
 
 export function useConfirmEmailMutation() {
-  const mutation = useMutation({
+  const { useApiMutation } = useApi();
+
+  const mutation = useApiMutation({
     mutationKey: authMutationKeys.confirmEmail,
     mutationFn: (values: EmailConfirmationFormValues) => authService.confirmEmail(values),
     meta: {

@@ -1,7 +1,7 @@
 import { computed } from "vue";
-import { useMutation } from "@tanstack/vue-query";
 import { ApiRequestError, ApiValidationError } from "@/lib/api/errors";
 import type { RegisterFormErrors, RegisterFormValues } from "@/lib/auth/register";
+import { useApi } from "@/composables/useApi";
 import { authService } from "@/services/auth/auth.service";
 
 const authMutationKeys = {
@@ -9,7 +9,9 @@ const authMutationKeys = {
 };
 
 export function useRegisterMutation() {
-  const mutation = useMutation({
+  const { useApiMutation } = useApi();
+
+  const mutation = useApiMutation({
     mutationKey: authMutationKeys.register,
     mutationFn: (values: RegisterFormValues) => authService.register(values),
     meta: {
