@@ -82,6 +82,28 @@ public sealed class AuthController(
         return Ok(new ResendEmailConfirmationResponse(request.Email, "pending_email_confirmation"));
     }
 
+    [HttpPost("email-confirmation/resend-availability")]
+    [ProducesResponseType<EmailConfirmationResendAvailabilityResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<EmailConfirmationResendAvailabilityResponse>> GetResendAvailability(
+        [FromBody] EmailConfirmationResendAvailabilityRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await emailConfirmationService.GetResendAvailabilityAsync(request.Email, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>(result.Errors))
+            {
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
+
+        return Ok(new EmailConfirmationResendAvailabilityResponse(
+            request.Email,
+            result.CanResend,
+            result.RemainingSeconds));
+    }
+
     [HttpPost("email-confirmation/confirm")]
     [ProducesResponseType<ConfirmEmailResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]

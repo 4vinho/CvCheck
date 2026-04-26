@@ -161,6 +161,40 @@ public sealed class RegisterUnitTests
     }
 
     [Fact]
+    public async Task EmailConfirmationService_GetResendAvailability_WhenCooldownIsActive_ReturnsRemainingSeconds()
+    {
+        await using var fixture = await AuthServiceFixture.CreateAsync();
+        var emailConfirmationService = fixture.GetRequiredService<EmailConfirmationService>();
+
+        var user = await fixture.CreateUserAsync("availability@example.com", "StrongPass1!", emailConfirmed: false);
+        await emailConfirmationService.GenerateAndSendCodeAsync(user);
+        fixture.TimeProvider.Advance(TimeSpan.FromSeconds(10));
+
+        var result = await emailConfirmationService.GetResendAvailabilityAsync(user.Email!);
+
+        Assert.True(result.Succeeded);
+        Assert.False(result.CanResend);
+        Assert.Equal(50, result.RemainingSeconds);
+    }
+
+    [Fact]
+    public async Task EmailConfirmationService_GetResendAvailability_WhenCooldownHasExpired_ReturnsCanResend()
+    {
+        await using var fixture = await AuthServiceFixture.CreateAsync();
+        var emailConfirmationService = fixture.GetRequiredService<EmailConfirmationService>();
+
+        var user = await fixture.CreateUserAsync("availability-ready@example.com", "StrongPass1!", emailConfirmed: false);
+        await emailConfirmationService.GenerateAndSendCodeAsync(user);
+        fixture.TimeProvider.Advance(TimeSpan.FromMinutes(1));
+
+        var result = await emailConfirmationService.GetResendAvailabilityAsync(user.Email!);
+
+        Assert.True(result.Succeeded);
+        Assert.True(result.CanResend);
+        Assert.Equal(0, result.RemainingSeconds);
+    }
+
+    [Fact]
     public async Task EmailConfirmationService_Confirm_WithValidCode_MarksAccountAsConfirmed()
     {
         await using var fixture = await AuthServiceFixture.CreateAsync();
@@ -231,6 +265,11 @@ public sealed class RegisterUnitTests
 
         public Task<api.Core.Results.Auth.ResendEmailConfirmationResult> ResendAsync(string email, CancellationToken cancellationToken = default) =>
             Task.FromResult(api.Core.Results.Auth.ResendEmailConfirmationResult.Success());
+
+        public Task<api.Core.Results.Auth.EmailConfirmationResendAvailabilityResult> GetResendAvailabilityAsync(
+            string email,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(api.Core.Results.Auth.EmailConfirmationResendAvailabilityResult.Success(true, 0));
     }
 
     private sealed class AuthServiceFixture : IAsyncDisposable

@@ -9,5 +9,7 @@ public interface IEmailConfirmationService
 
     Task<ResendEmailConfirmationResult> ResendAsync(string email, CancellationToken cancellationToken = default);
 
+    Task<EmailConfirmationResendAvailabilityResult> GetResendAvailabilityAsync(string email, CancellationToken cancellationToken = default);
+
     Task<ConfirmEmailResult> ConfirmAsync(string email, string code, CancellationToken cancellationToken = default);
 }

@@ -57,19 +57,33 @@ public sealed class EmailConfirmationService(
             return ResendEmailConfirmationResult.Failure("email", "Email is already confirmed.");
         }
 
-        var now = timeProvider.UtcNow;
-        var latestActiveCode = await dbContext.EmailConfirmationCodes
-            .Where(code => code.UserId == user.Id && code.ConsumedAtUtc == null && code.InvalidatedAtUtc == null)
-            .OrderByDescending(code => code.CreatedAtUtc)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (latestActiveCode is not null && now - latestActiveCode.CreatedAtUtc < ResendCooldown)
+        var availability = await GetResendAvailabilityForUserAsync(user.Id, cancellationToken);
+        if (!availability.CanResend)
         {
             return ResendEmailConfirmationResult.Failure("email", "Wait before requesting a new confirmation code.");
         }
 
         await GenerateAndSendCodeAsync(user, cancellationToken);
         return ResendEmailConfirmationResult.Success();
+    }
+
+    public async Task<EmailConfirmationResendAvailabilityResult> GetResendAvailabilityAsync(
+        string email,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        if (user is null)
+        {
+            return EmailConfirmationResendAvailabilityResult.Failure("email", "Account was not found.");
+        }
+
+        if (user.EmailConfirmed)
+        {
+            return EmailConfirmationResendAvailabilityResult.Failure("email", "Email is already confirmed.");
+        }
+
+        var availability = await GetResendAvailabilityForUserAsync(user.Id, cancellationToken);
+        return EmailConfirmationResendAvailabilityResult.Success(availability.CanResend, availability.RemainingSeconds);
     }
 
     public async Task<ConfirmEmailResult> ConfirmAsync(string email, string code, CancellationToken cancellationToken = default)
@@ -112,5 +126,29 @@ public sealed class EmailConfirmationService(
         await userManager.UpdateAsync(user);
         await dbContext.SaveChangesAsync(cancellationToken);
         return ConfirmEmailResult.Success();
+    }
+
+    private async Task<(bool CanResend, int RemainingSeconds)> GetResendAvailabilityForUserAsync(
+        string userId,
+        CancellationToken cancellationToken)
+    {
+        var now = timeProvider.UtcNow;
+        var latestActiveCode = await dbContext.EmailConfirmationCodes
+            .Where(code => code.UserId == userId && code.ConsumedAtUtc == null && code.InvalidatedAtUtc == null)
+            .OrderByDescending(code => code.CreatedAtUtc)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (latestActiveCode is null)
+        {
+            return (true, 0);
+        }
+
+        var remaining = ResendCooldown - (now - latestActiveCode.CreatedAtUtc);
+        if (remaining <= TimeSpan.Zero)
+        {
+            return (true, 0);
+        }
+
+        return (false, (int)Math.Ceiling(remaining.TotalSeconds));
     }
 }

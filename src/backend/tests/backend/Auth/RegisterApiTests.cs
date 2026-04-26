@@ -158,6 +158,60 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
     }
 
     [Fact]
+    public async Task ResendAvailability_WithActiveCooldown_ReturnsRemainingSeconds()
+    {
+        var email = "cooldown-api@example.com";
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = "StrongPass1!",
+            ConfirmPassword = "StrongPass1!"
+        });
+
+        factory.TimeProvider.Advance(TimeSpan.FromSeconds(12));
+
+        var response = await client.PostAsJsonAsync("/auth/email-confirmation/resend-availability",
+            new EmailConfirmationResendAvailabilityRequest
+            {
+                Email = email
+            });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<EmailConfirmationResendAvailabilityResponse>();
+        Assert.NotNull(payload);
+        Assert.False(payload.CanResend);
+        Assert.Equal(48, payload.RemainingSeconds);
+    }
+
+    [Fact]
+    public async Task ResendAvailability_AfterCooldown_ReturnsCanResend()
+    {
+        var email = "cooldown-ready-api@example.com";
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = "StrongPass1!",
+            ConfirmPassword = "StrongPass1!"
+        });
+
+        factory.TimeProvider.Advance(TimeSpan.FromMinutes(1));
+
+        var response = await client.PostAsJsonAsync("/auth/email-confirmation/resend-availability",
+            new EmailConfirmationResendAvailabilityRequest
+            {
+                Email = email
+            });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<EmailConfirmationResendAvailabilityResponse>();
+        Assert.NotNull(payload);
+        Assert.True(payload.CanResend);
+        Assert.Equal(0, payload.RemainingSeconds);
+    }
+
+    [Fact]
     public async Task ConfirmEmail_WithValidCode_MarksAccountAsConfirmed()
     {
         var email = "confirm-api@example.com";
