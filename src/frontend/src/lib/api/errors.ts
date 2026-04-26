@@ -30,3 +30,13 @@ export class ApiValidationError<TField extends string = string> extends Error {
     this.userMessage = userMessage;
   }
 }
+
+export class PendingEmailConfirmationError extends Error {
+  email: string;
+
+  constructor(email: string, message = "Confirme seu email para concluir o acesso a conta.") {
+    super(message);
+    this.name = "PendingEmailConfirmationError";
+    this.email = email;
+  }
+}

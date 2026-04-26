@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AppShell from "@/layouts/AppShell.vue";
 import AppHomePage from "@/pages/AppHomePage.vue";
+import AuthEmailConfirmationPage from "@/pages/AuthEmailConfirmationPage.vue";
+import AuthLoginPage from "@/pages/AuthLoginPage.vue";
 import AuthRegisterPage from "@/pages/AuthRegisterPage.vue";
 import AuthRegisterPendingPage from "@/pages/AuthRegisterPendingPage.vue";
 import AuthShell from "@/layouts/AuthShell.vue";
@@ -18,6 +20,11 @@ const router = createRouter({
       component: AuthShell,
       children: [
         {
+          path: "entrar",
+          name: "auth-login",
+          component: AuthLoginPage,
+        },
+        {
           path: "cadastro",
           name: "auth-register",
           component: AuthRegisterPage,
@@ -26,6 +33,11 @@ const router = createRouter({
           path: "cadastro/pendente",
           name: "auth-register-pending",
           component: AuthRegisterPendingPage,
+        },
+        {
+          path: "confirmar-email",
+          name: "auth-email-confirmation",
+          component: AuthEmailConfirmationPage,
         },
       ],
     },
