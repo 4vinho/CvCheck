@@ -12,13 +12,6 @@
       </template>
 
       <form class="space-y-5" novalidate @submit.prevent="handleSubmit">
-        <div
-          v-if="submitError"
-          class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700"
-        >
-          {{ submitError }}
-        </div>
-
         <div class="space-y-2">
           <Label for="email">Email</Label>
           <Input
@@ -155,7 +148,6 @@ import {
   type RegisterHelpMessage,
   type RegisterFormErrors,
   type RegisterFormHelp,
-  validateRegisterForm,
 } from "@/lib/auth/register";
 
 const router = useRouter();
@@ -163,7 +155,6 @@ const router = useRouter();
 const form = reactive(createRegisterFormValues());
 const errors = reactive<RegisterFormErrors>({});
 const passwordGuidance = getRegisterPasswordGuidance();
-const submitError = ref("");
 const registerMutation = useRegisterMutation();
 const isSubmitting = registerMutation.isSubmitting;
 const helpMessages = reactive<RegisterFormHelp>(getRegisterFormHelp(form));
@@ -207,17 +198,6 @@ function getHelpTextClass(tone: RegisterHelpMessage["tone"]) {
 
 async function handleSubmit() {
   registerMutation.reset();
-  submitError.value = "";
-  const nextErrors = validateRegisterForm(form);
-
-  errors.email = nextErrors.email;
-  errors.password = nextErrors.password;
-  errors.confirmPassword = nextErrors.confirmPassword;
-
-  if (nextErrors.email || nextErrors.password || nextErrors.confirmPassword) {
-    return;
-  }
-
   clearRegisterFormErrors(errors);
 
   try {
@@ -233,7 +213,6 @@ async function handleSubmit() {
     errors.email = registerMutation.fieldErrors.value.email;
     errors.password = registerMutation.fieldErrors.value.password;
     errors.confirmPassword = registerMutation.fieldErrors.value.confirmPassword;
-    submitError.value = registerMutation.errorMessage.value;
   }
 }
 </script>

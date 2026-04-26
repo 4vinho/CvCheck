@@ -15,6 +15,16 @@ export function useConfirmEmailMutation() {
   const mutation = useMutation({
     mutationKey: authMutationKeys.confirmEmail,
     mutationFn: (values: EmailConfirmationFormValues) => authService.confirmEmail(values),
+    meta: {
+      successToast: {
+        title: "Conta liberada",
+        message: "Email confirmado com sucesso. Agora o login passa a aceitar esta conta normalmente.",
+      },
+      errorToast: {
+        title: "Nao foi possivel confirmar o email",
+        message: "Nao foi possivel confirmar o email.",
+      },
+    },
   });
 
   const fieldErrors = computed<EmailConfirmationFormErrors>(() => {
@@ -31,7 +41,7 @@ export function useConfirmEmailMutation() {
     const error = mutation.error.value;
 
     if (error instanceof ApiValidationError) {
-      return error.userMessage ?? "";
+      return error.details[0] ?? "";
     }
 
     if (error instanceof ApiRequestError) {

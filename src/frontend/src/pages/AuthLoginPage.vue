@@ -12,13 +12,6 @@
       </template>
 
       <form class="space-y-5" novalidate @submit.prevent="handleSubmit">
-        <div
-          v-if="submitError"
-          class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700"
-        >
-          {{ submitError }}
-        </div>
-
         <div class="space-y-2">
           <Label for="email">Email</Label>
           <Input
@@ -124,14 +117,12 @@ const router = useRouter();
 
 const form = reactive(createLoginFormValues());
 const errors = reactive<LoginFormErrors>({});
-const submitError = ref("");
 const showPassword = ref(false);
 const loginMutation = useLoginMutation();
 const isSubmitting = loginMutation.isSubmitting;
 
 async function handleSubmit() {
   loginMutation.reset();
-  submitError.value = "";
   const nextErrors = validateLoginForm(form);
 
   errors.email = nextErrors.email;
@@ -162,7 +153,6 @@ async function handleSubmit() {
 
     errors.email = loginMutation.fieldErrors.value.email;
     errors.password = loginMutation.fieldErrors.value.password;
-    submitError.value = loginMutation.errorMessage.value;
   }
 }
 </script>

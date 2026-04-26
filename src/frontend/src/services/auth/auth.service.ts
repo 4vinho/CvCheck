@@ -79,8 +79,9 @@ function normalizeValidationError<TFieldName extends string>(
   payload: ValidationProblemDetailsPayload,
   fieldMap: Record<string, TFieldName>,
 ) {
+  console.log("[auth.service] normalizeValidationError:payload", payload);
   const fieldErrors: ApiFieldErrors<TFieldName> = {};
-  const generalMessages: string[] = [];
+  const detailMessages: string[] = [];
 
   for (const [key, messages] of Object.entries(payload.errors ?? {})) {
     if (!messages?.length) {
@@ -92,15 +93,21 @@ function normalizeValidationError<TFieldName extends string>(
 
     if (fieldName) {
       fieldErrors[fieldName] = message;
-      continue;
     }
 
-    generalMessages.push(...messages);
+    detailMessages.push(...messages);
   }
+
+  console.log("[auth.service] normalizeValidationError:result", {
+    title: payload.title ?? "Validation error",
+    fieldErrors,
+    detailMessages,
+  });
 
   return new ApiValidationError<TFieldName>(
     fieldErrors,
-    generalMessages[0] ?? payload.title,
+    payload.title ?? "Validation error",
+    detailMessages,
   );
 }
 
@@ -122,6 +129,7 @@ export const authService = {
       return response;
     } catch (error) {
       if (error instanceof ApiHttpError && error.status === 400) {
+        console.error("[auth.service] register:400", error.body);
         throw normalizeValidationError((error.body ?? {}) as ValidationProblemDetailsPayload, registerErrorFieldMap);
       }
 
@@ -148,6 +156,7 @@ export const authService = {
       return response;
     } catch (error) {
       if (error instanceof ApiHttpError && error.status === 403) {
+        console.error("[auth.service] login:403", error.body);
         const response = (error.body ?? {}) as Partial<LoginResponse>;
 
         if (
@@ -160,6 +169,7 @@ export const authService = {
       }
 
       if (error instanceof ApiHttpError && error.status === 400) {
+        console.error("[auth.service] login:400", error.body);
         throw normalizeValidationError((error.body ?? {}) as ValidationProblemDetailsPayload, loginErrorFieldMap);
       }
 
@@ -183,6 +193,7 @@ export const authService = {
       return response;
     } catch (error) {
       if (error instanceof ApiHttpError && error.status === 400) {
+        console.error("[auth.service] resend:400", error.body);
         throw normalizeValidationError(
           (error.body ?? {}) as ValidationProblemDetailsPayload,
           emailConfirmationErrorFieldMap,
@@ -210,6 +221,7 @@ export const authService = {
       return response;
     } catch (error) {
       if (error instanceof ApiHttpError && error.status === 400) {
+        console.error("[auth.service] confirm:400", error.body);
         throw normalizeValidationError(
           (error.body ?? {}) as ValidationProblemDetailsPayload,
           emailConfirmationErrorFieldMap,

@@ -12,6 +12,16 @@ export function useLoginMutation() {
   const mutation = useMutation({
     mutationKey: authMutationKeys.login,
     mutationFn: (values: LoginFormValues) => authService.login(values),
+    meta: {
+      successToast: {
+        title: "Login concluido",
+        message: "Sua conta autenticada esta pronta para os proximos fluxos.",
+      },
+      errorToast: {
+        title: "Nao foi possivel entrar",
+        message: "Nao foi possivel entrar.",
+      },
+    },
   });
 
   const fieldErrors = computed<LoginFormErrors>(() => {
@@ -28,7 +38,7 @@ export function useLoginMutation() {
     const error = mutation.error.value;
 
     if (error instanceof ApiValidationError) {
-      return error.userMessage ?? "";
+      return error.details[0] ?? "";
     }
 
     if (error instanceof ApiRequestError) {

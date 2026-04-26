@@ -25,20 +25,6 @@
         </div>
       </template>
 
-      <div
-        v-if="successMessage"
-        class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-800"
-      >
-        {{ successMessage }}
-      </div>
-
-      <div
-        v-if="submitError"
-        class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700"
-      >
-        {{ submitError }}
-      </div>
-
       <div class="grid gap-4 md:grid-cols-2">
         <div class="rounded-2xl border border-border/70 bg-background/70 p-4">
           <p class="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
@@ -91,8 +77,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 
 const route = useRoute();
 const resendMutation = useResendEmailConfirmationMutation();
-const submitError = ref("");
-const successMessage = ref("");
 const resendCooldown = ref(0);
 let cooldownTimer: ReturnType<typeof setInterval> | undefined;
 
@@ -161,16 +145,11 @@ function startCooldown() {
 
 async function handleResend() {
   resendMutation.reset();
-  submitError.value = "";
-  successMessage.value = "";
 
   try {
-    const response = await resendMutation.submit(resolvedEmail.value);
-    successMessage.value = `Enviamos um novo codigo para ${response.email}. Use apenas a mensagem mais recente.`;
+    await resendMutation.submit(resolvedEmail.value);
     startCooldown();
-  } catch {
-    submitError.value = resendMutation.fieldError.value || resendMutation.errorMessage.value;
-  }
+  } catch {}
 }
 
 onBeforeUnmount(() => {

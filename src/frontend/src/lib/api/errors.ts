@@ -21,13 +21,15 @@ export class ApiHttpError extends Error {
 
 export class ApiValidationError<TField extends string = string> extends Error {
   fieldErrors: ApiFieldErrors<TField>;
-  userMessage?: string;
+  title: string;
+  details: string[];
 
-  constructor(fieldErrors: ApiFieldErrors<TField>, userMessage?: string) {
-    super(userMessage ?? "Validation failed.");
+  constructor(fieldErrors: ApiFieldErrors<TField>, title: string, details: string[]) {
+    super(title);
     this.name = "ApiValidationError";
     this.fieldErrors = fieldErrors;
-    this.userMessage = userMessage;
+    this.title = title;
+    this.details = details;
   }
 }
 

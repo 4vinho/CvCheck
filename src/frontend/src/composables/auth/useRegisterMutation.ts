@@ -12,6 +12,16 @@ export function useRegisterMutation() {
   const mutation = useMutation({
     mutationKey: authMutationKeys.register,
     mutationFn: (values: RegisterFormValues) => authService.register(values),
+    meta: {
+      successToast: {
+        title: "Conta criada",
+        message: "Cadastro concluido. Agora confirme o codigo enviado para o seu email.",
+      },
+      errorToast: {
+        title: "Nao foi possivel criar a conta",
+        message: "Nao foi possivel criar a conta.",
+      },
+    },
   });
 
   const fieldErrors = computed<RegisterFormErrors>(() => {
@@ -28,7 +38,7 @@ export function useRegisterMutation() {
     const error = mutation.error.value;
 
     if (error instanceof ApiValidationError) {
-      return error.userMessage ?? "";
+      return error.details[0] ?? "";
     }
 
     if (error instanceof ApiRequestError) {

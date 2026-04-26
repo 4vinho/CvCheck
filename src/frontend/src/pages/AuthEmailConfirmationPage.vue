@@ -17,13 +17,6 @@
       </template>
 
       <form v-if="!isConfirmed" class="space-y-5" novalidate @submit.prevent="handleSubmit">
-        <div
-          v-if="submitError"
-          class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700"
-        >
-          {{ submitError }}
-        </div>
-
         <div class="space-y-2">
           <Label for="email">Email</Label>
           <Input
@@ -81,18 +74,6 @@
       </form>
 
       <div v-else class="grid gap-4">
-        <div class="rounded-[1.5rem] border border-emerald-200 bg-emerald-50/90 p-5">
-          <p class="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-700">
-            Conta liberada
-          </p>
-          <p class="mt-2 text-2xl font-semibold tracking-tight text-emerald-950">
-            Email confirmado com sucesso.
-          </p>
-          <p class="mt-3 text-sm leading-6 text-emerald-900">
-            Agora o login passa a aceitar esta conta normalmente.
-          </p>
-        </div>
-
         <div class="flex flex-wrap gap-3">
           <RouterLink :to="{ name: 'auth-login', query: { email: confirmedEmail } }" :class="buttonVariants({ size: 'lg' })">
             Ir para login
@@ -148,7 +129,6 @@ const initialEmail = typeof route.query.email === "string" ? route.query.email.t
 
 const form = reactive(createEmailConfirmationFormValues(initialEmail));
 const errors = reactive<EmailConfirmationFormErrors>({});
-const submitError = ref("");
 const isConfirmed = ref(false);
 const confirmedEmail = ref("");
 const confirmEmailMutation = useConfirmEmailMutation();
@@ -160,7 +140,6 @@ function handleCodeInput(value: string | number | null | undefined) {
 
 async function handleSubmit() {
   confirmEmailMutation.reset();
-  submitError.value = "";
   const nextErrors = validateEmailConfirmationForm(form);
 
   errors.email = nextErrors.email;
@@ -179,7 +158,6 @@ async function handleSubmit() {
   } catch {
     errors.email = confirmEmailMutation.fieldErrors.value.email;
     errors.code = confirmEmailMutation.fieldErrors.value.code;
-    submitError.value = confirmEmailMutation.errorMessage.value;
   }
 }
 </script>
