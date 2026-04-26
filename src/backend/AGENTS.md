@@ -1,56 +1,56 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
+## Project Structure & Architecture
 
-This backend lives in `src/backend/`. The API project is `api/`, with code organized by layer:
+This backend lives in `src/backend/` and follows a layered Clean Architecture style inside a single ASP.NET Core project:
 
-- `api/App/`: HTTP-facing code such as controllers and request/response DTOs.
-- `api/Core/`: domain entities, interfaces, enums, and core results.
-- `api/Infra/`: persistence, Identity integration, dependency injection, and external services.
-- `api/Program.cs`: application bootstrap only; keep it lean.
-- `tests/backend/`: xUnit test project with API and unit coverage.
+- `api/App/`: API boundary. Keep controllers, HTTP contracts, and request/response DTOs here.
+- `api/Core/`: business center. Keep entities, interfaces, enums, and result models here. `Core` must not depend on `App` or external providers.
+- `api/Infra/`: technical implementations. This layer contains EF Core, ASP.NET Identity, dependency injection, migrations, and external integrations.
+- `api/Program.cs`: composition root only. Wire services, middleware, Swagger, and startup behavior here.
+- `tests/backend/`: xUnit test project for API and unit tests.
 
-Prefer feature-oriented subfolders inside each layer, for example `Auth/`, `Users/`, or `CvAnalysis/`.
+Prefer feature folders inside each layer, for example `Auth/`, `Accounts/`, or `CvAnalysis/`.
+
+## Database & Infrastructure Flow
+
+The API uses PostgreSQL through EF Core and `ASP.NET Core Identity`.
+
+- Connection string key: `ConnectionStrings:DefaultConnection`
+- EF registration: `api/Infra/DependencyInjection/ServiceCollectionExtensions.cs`
+- DbContext: `api/Infra/Data/ApplicationDbContext.cs`
+- Migrations: `api/Infra/Data/Migrations/`
+
+At startup, `Program.cs` calls `AddInfrastructure(builder.Configuration)` and then `MigrateDatabaseAsync()`. In development, the app applies pending migrations automatically. Local database infra lives in `src/infra/`; copy `.env.example` to `.env` and run `docker compose up -d --build`.
 
 ## Build, Test, and Development Commands
 
-Run commands from `src/backend/`.
+Run from `src/backend/`.
 
-- `dotnet restore api/api.csproj`: restores NuGet packages.
-- `dotnet build api/api.csproj`: compiles the backend and catches integration errors early.
-- `dotnet run --project api/api.csproj`: starts the API locally.
-- `dotnet watch --project api/api.csproj run`: runs with hot reload.
-- `dotnet test tests/backend/backend.Tests.csproj`: executes the backend test suite.
+- `dotnet restore api/api.csproj`: restore packages.
+- `dotnet build api/api.csproj`: compile the backend.
+- `dotnet run --project api/api.csproj --launch-profile http`: run the API on `http://localhost:5038`.
+- `dotnet watch --project api/api.csproj run`: run with hot reload.
+- `dotnet test tests/backend/backend.Tests.csproj`: run the automated tests.
+
+Swagger UI is available in development at `/swagger`.
 
 ## Coding Style & Naming Conventions
 
-Use standard C# conventions with 4-space indentation, file-scoped namespaces, and nullable reference types enabled. Keep one public type per file.
+Use 4-space indentation, file-scoped namespaces, nullable reference types, and one public type per file.
 
-- `PascalCase`: classes, records, enums, methods, properties.
+- `PascalCase`: classes, records, methods, properties.
 - `camelCase`: locals and parameters.
 - Controllers end with `Controller`.
-- DTOs use names like `RegisterRequest` and `RegisterResponse`.
-- Interfaces in `Core` start with `I`, for example `IRegistrationService`.
+- DTOs follow `SomethingRequest` and `SomethingResponse`.
+- Interfaces in `Core` start with `I`.
 
-## Testing Guidelines
+Keep business rules out of controllers and infrastructure details out of `Core`.
 
-Use xUnit for automated tests. Keep API/integration tests near the HTTP flow and unit tests near business or mapping rules.
+## Testing, Commits, and Safety
 
-- Test file naming: `SubjectTests.cs`
-- Test method naming: `Action_WhenCondition_Result`
-- Prefer covering validation, contracts, persistence effects, and auth behavior over trivial models.
+Use xUnit. Name files `SubjectTests.cs` and methods `Action_WhenCondition_Result`. Favor contract, validation, persistence, and auth behavior coverage.
 
-Run `dotnet test` before opening a PR.
+Follow Conventional Commits, for example `feat(auth): cria cadastro local` or `chore(git): ignora cache dotnet`. Separate commits by intent.
 
-## Commit & Pull Request Guidelines
-
-Follow Conventional Commits with short titles under 50 characters, for example:
-
-- `feat(auth): cria cadastro local`
-- `test(auth): cobre cadastro local`
-
-Separate commits by intent: feature, refactor, test, docs, or chore. Pull requests should explain the goal, summarize key changes, list validation performed, and link the related work item. Include request/response examples when an API contract changes.
-
-## Security & Configuration Tips
-
-Do not commit secrets. Keep sensitive settings out of `appsettings*.json`; prefer environment variables or secret storage. Ignore generated outputs such as `bin/`, `obj/`, and local `.dotnet/` artifacts.
+Do not commit secrets. Keep real credentials out of `appsettings*.json`. Ignore generated outputs such as `bin/`, `obj/`, and `src/backend/.dotnet/`.
