@@ -1,6 +1,0 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="src/CvCheck.Backend/CvCheck.Backend.csproj" />
-  </Folder>
-  <Project Path="../../tests/backend/CvCheck.Backend.Tests/CvCheck.Backend.Tests.csproj" />
-</Solution>
