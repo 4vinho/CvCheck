@@ -3,6 +3,7 @@ using api.Core.Interfaces;
 using api.Core.Interfaces.Auth;
 using api.Infra.Data;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,11 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
+            var dataProtectionKeysDirectory = new DirectoryInfo(Path.Combine(
+                AppContext.BaseDirectory,
+                "DataProtection-Keys",
+                databaseName));
+
             services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
             services.RemoveAll<IDbContextOptionsConfiguration<ApplicationDbContext>>();
             services.RemoveAll<IConfirmationCodeGenerator>();
@@ -38,6 +44,9 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase(databaseName));
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(dataProtectionKeysDirectory)
+                .SetApplicationName("CvCheck.Tests");
 
             services.AddSingleton<ITimeProvider>(TimeProvider);
             services.AddSingleton<IConfirmationCodeGenerator>(CodeGenerator);

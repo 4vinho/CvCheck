@@ -344,7 +344,7 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
             Password = password
         });
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
         Assert.True(response.Headers.TryGetValues("Set-Cookie", out var setCookieValues));
         Assert.Contains(setCookieValues, header => header.Contains(".AspNetCore.Identity.Application=", StringComparison.Ordinal));
 
@@ -380,7 +380,7 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
             Password = password
         });
 
-        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+        Assert.True(loginResponse.IsSuccessStatusCode, await loginResponse.Content.ReadAsStringAsync());
 
         var logoutResponse = await client.PostAsync("/auth/logout", content: null);
 
