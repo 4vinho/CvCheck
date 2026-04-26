@@ -10,13 +10,19 @@
         </h1>
       </RouterLink>
 
-      <nav class="flex items-center gap-2 text-sm text-muted-foreground">
-        <span class="rounded-full border border-border/70 bg-background/70 px-3 py-1">
-          Local sign up
-        </span>
-        <span class="rounded-full border border-border/70 bg-background/70 px-3 py-1">
-          Email confirmation
-        </span>
+      <nav class="flex items-center gap-2 text-sm text-secondary-foreground">
+        <RouterLink
+          :to="{ name: 'auth-login' }"
+          class="rounded-full border border-border/70 bg-secondary/70 px-3 py-1 transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          Login
+        </RouterLink>
+        <RouterLink
+          :to="{ name: 'auth-register' }"
+          class="rounded-full border border-border/70 bg-primary/70 px-3 py-1 transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          Register
+        </RouterLink>
       </nav>
     </div>
   </header>
