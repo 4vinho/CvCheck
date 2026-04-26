@@ -6,7 +6,10 @@ namespace api.App.Controllers;
 
 [ApiController]
 [Route("auth")]
-public sealed class AuthController(IRegistrationService registrationService) : ControllerBase
+public sealed class AuthController(
+    IRegistrationService registrationService,
+    ILoginService loginService,
+    IEmailConfirmationService emailConfirmationService) : ControllerBase
 {
     [HttpPost("register")]
     [ProducesResponseType<RegisterResponse>(StatusCodes.Status201Created)]
@@ -30,5 +33,71 @@ public sealed class AuthController(IRegistrationService registrationService) : C
             Status: "pending_email_confirmation");
 
         return Created(string.Empty, response);
+    }
+
+    [HttpPost("login")]
+    [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<LoginResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<LoginResponse>> Login(
+        [FromBody] LoginRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await loginService.LoginAsync(request, cancellationToken);
+        if (result.Succeeded)
+        {
+            return Ok(new LoginResponse(result.Email!, false, "authenticated"));
+        }
+
+        if (result.RequiresEmailConfirmation)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new LoginResponse(
+                result.Email!,
+                true,
+                "pending_email_confirmation"));
+        }
+
+        return BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>(result.Errors))
+        {
+            Status = StatusCodes.Status400BadRequest
+        });
+    }
+
+    [HttpPost("email-confirmation/resend")]
+    [ProducesResponseType<ResendEmailConfirmationResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ResendEmailConfirmationResponse>> ResendEmailConfirmation(
+        [FromBody] ResendEmailConfirmationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await emailConfirmationService.ResendAsync(request.Email, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>(result.Errors))
+            {
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
+
+        return Ok(new ResendEmailConfirmationResponse(request.Email, "pending_email_confirmation"));
+    }
+
+    [HttpPost("email-confirmation/confirm")]
+    [ProducesResponseType<ConfirmEmailResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ConfirmEmailResponse>> ConfirmEmail(
+        [FromBody] ConfirmEmailRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await emailConfirmationService.ConfirmAsync(request.Email, request.Code, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>(result.Errors))
+            {
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
+
+        return Ok(new ConfirmEmailResponse(request.Email, "confirmed"));
     }
 }

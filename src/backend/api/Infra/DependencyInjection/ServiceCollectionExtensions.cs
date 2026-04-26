@@ -1,7 +1,9 @@
 using api.Core.Entities;
+using api.Core.Interfaces;
 using api.Core.Interfaces.Auth;
 using api.Infra.Data;
 using api.Infra.Services.Auth;
+using api.Infra.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +28,11 @@ public static class ServiceCollectionExtensions
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.AddScoped<IRegistrationService, RegistrationService>();
+        services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
+        services.AddScoped<ILoginService, LoginService>();
+        services.AddSingleton<IConfirmationCodeGenerator, RandomConfirmationCodeGenerator>();
+        services.AddSingleton<IEmailConfirmationDeliveryService, NoOpEmailConfirmationDeliveryService>();
+        services.AddSingleton<ITimeProvider, SystemTimeProvider>();
 
         return services;
     }

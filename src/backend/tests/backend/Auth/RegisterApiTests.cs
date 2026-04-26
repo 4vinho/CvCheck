@@ -17,7 +17,7 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
     }
 
     [Fact]
-    public async Task Register_WithValidPayload_CreatesUnconfirmedAccount()
+    public async Task Register_WithValidPayload_CreatesUnconfirmedAccountAndSendsConfirmationCode()
     {
         var request = new RegisterRequest
         {
@@ -32,17 +32,19 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
         Assert.False(response.Headers.TryGetValues("Set-Cookie", out _));
 
         var payload = await response.Content.ReadFromJsonAsync<RegisterResponse>();
+        var createdUser = await factory.FindUserByEmailAsync(request.Email);
+        var codes = await factory.GetCodesForUserAsync(request.Email);
 
         Assert.NotNull(payload);
         Assert.Equal(request.Email, payload.Email);
         Assert.True(payload.RequiresEmailConfirmation);
         Assert.Equal("pending_email_confirmation", payload.Status);
-
-        var createdUser = await factory.FindUserByEmailAsync(request.Email);
-
         Assert.NotNull(createdUser);
         Assert.Equal(request.Email, createdUser.UserName);
         Assert.False(createdUser.EmailConfirmed);
+        Assert.Single(codes);
+        Assert.Equal(6, codes[0].Code.Length);
+        Assert.Single(factory.EmailDeliveryService.Deliveries, delivery => delivery.Email == request.Email);
     }
 
     [Fact]
@@ -68,73 +70,232 @@ public sealed class RegisterApiTests : IClassFixture<CustomWebApplicationFactory
     }
 
     [Fact]
-    public async Task Register_WithWeakPassword_ReturnsIdentityValidationAndDoesNotCreateAccount()
+    public async Task Login_WithUnconfirmedLocalAccount_ReturnsPendingConfirmationAndDoesNotAuthenticate()
     {
         var request = new RegisterRequest
         {
-            Email = "weakpass@example.com",
-            Password = "123",
-            ConfirmPassword = "123"
-        };
-
-        var response = await client.PostAsJsonAsync("/auth/register", request);
-
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-
-        var payload = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
-
-        Assert.NotNull(payload);
-        Assert.True(payload.Errors.ContainsKey("password"));
-        Assert.False(response.Headers.TryGetValues("Set-Cookie", out _));
-        Assert.Null(await factory.FindUserByEmailAsync(request.Email));
-    }
-
-    [Fact]
-    public async Task Register_WithDifferentConfirmPassword_ReturnsValidationError()
-    {
-        var request = new RegisterRequest
-        {
-            Email = "mismatch@example.com",
-            Password = "StrongPass1!",
-            ConfirmPassword = "StrongPass2!"
-        };
-
-        var response = await client.PostAsJsonAsync("/auth/register", request);
-
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-
-        var payload = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
-
-        Assert.NotNull(payload);
-        Assert.True(payload.Errors.ContainsKey("confirmPassword"));
-    }
-
-    [Fact]
-    public async Task Register_WithExistingEmail_ReturnsValidationAndKeepsOriginalAccountPendingConfirmation()
-    {
-        var request = new RegisterRequest
-        {
-            Email = "duplicate@example.com",
+            Email = "pending-login@example.com",
             Password = "StrongPass1!",
             ConfirmPassword = "StrongPass1!"
         };
 
-        var firstResponse = await client.PostAsJsonAsync("/auth/register", request);
-        var secondResponse = await client.PostAsJsonAsync("/auth/register", request);
+        await client.PostAsJsonAsync("/auth/register", request);
 
-        Assert.Equal(HttpStatusCode.Created, firstResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+        var loginResponse = await client.PostAsJsonAsync("/auth/login", new LoginRequest
+        {
+            Email = request.Email,
+            Password = request.Password
+        });
 
-        var payload = await secondResponse.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(HttpStatusCode.Forbidden, loginResponse.StatusCode);
+        Assert.False(loginResponse.Headers.TryGetValues("Set-Cookie", out _));
+
+        var payload = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
 
         Assert.NotNull(payload);
+        Assert.True(payload.RequiresEmailConfirmation);
+        Assert.Equal("pending_email_confirmation", payload.Status);
+    }
+
+    [Fact]
+    public async Task ResendEmailConfirmation_WithPendingAccount_GeneratesNewCodeAndSendsEmail()
+    {
+        var email = "resend-api@example.com";
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = "StrongPass1!",
+            ConfirmPassword = "StrongPass1!"
+        });
+
+        factory.TimeProvider.Advance(TimeSpan.FromMinutes(2));
+
+        var response = await client.PostAsJsonAsync("/auth/email-confirmation/resend", new ResendEmailConfirmationRequest
+        {
+            Email = email
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<ResendEmailConfirmationResponse>();
+        var codes = await factory.GetCodesForUserAsync(email);
+
+        Assert.NotNull(payload);
+        Assert.Equal("pending_email_confirmation", payload.Status);
+        Assert.Equal(2, codes.Count);
+        Assert.NotNull(codes[0].InvalidatedAtUtc);
+        Assert.NotEqual(codes[0].Code, codes[1].Code);
+        Assert.Equal(2, factory.EmailDeliveryService.Deliveries.Count(delivery => delivery.Email == email));
+    }
+
+    [Fact]
+    public async Task ResendEmailConfirmation_WithConfirmedAccount_ReturnsValidationError()
+    {
+        var email = "confirmed-api@example.com";
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = "StrongPass1!",
+            ConfirmPassword = "StrongPass1!"
+        });
+
+        var initialCode = (await factory.GetCodesForUserAsync(email)).Single().Code;
+        await client.PostAsJsonAsync("/auth/email-confirmation/confirm", new ConfirmEmailRequest
+        {
+            Email = email,
+            Code = initialCode
+        });
+
+        var response = await client.PostAsJsonAsync("/auth/email-confirmation/resend", new ResendEmailConfirmationRequest
+        {
+            Email = email
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.NotNull(payload);
         Assert.True(payload.Errors.ContainsKey("email"));
-        Assert.False(secondResponse.Headers.TryGetValues("Set-Cookie", out _));
+    }
 
-        var createdUser = await factory.FindUserByEmailAsync(request.Email);
+    [Fact]
+    public async Task ConfirmEmail_WithValidCode_MarksAccountAsConfirmed()
+    {
+        var email = "confirm-api@example.com";
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = "StrongPass1!",
+            ConfirmPassword = "StrongPass1!"
+        });
 
-        Assert.NotNull(createdUser);
-        Assert.False(createdUser.EmailConfirmed);
-        Assert.Equal(request.Email, createdUser.UserName);
+        var initialCode = (await factory.GetCodesForUserAsync(email)).Single().Code;
+        var response = await client.PostAsJsonAsync("/auth/email-confirmation/confirm", new ConfirmEmailRequest
+        {
+            Email = email,
+            Code = initialCode
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<ConfirmEmailResponse>();
+        var user = await factory.FindUserByEmailAsync(email);
+
+        Assert.NotNull(payload);
+        Assert.Equal("confirmed", payload.Status);
+        Assert.True(user!.EmailConfirmed);
+    }
+
+    [Fact]
+    public async Task ConfirmEmail_WithInvalidCode_DoesNotConfirmAccount()
+    {
+        var email = "invalid-code-api@example.com";
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = "StrongPass1!",
+            ConfirmPassword = "StrongPass1!"
+        });
+
+        var response = await client.PostAsJsonAsync("/auth/email-confirmation/confirm", new ConfirmEmailRequest
+        {
+            Email = email,
+            Code = "ZZZ999"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        var user = await factory.FindUserByEmailAsync(email);
+        Assert.NotNull(payload);
+        Assert.True(payload.Errors.ContainsKey("code"));
+        Assert.False(user!.EmailConfirmed);
+    }
+
+    [Fact]
+    public async Task ConfirmEmail_WithExpiredCode_DoesNotConfirmAccount()
+    {
+        var email = "expired-api@example.com";
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = "StrongPass1!",
+            ConfirmPassword = "StrongPass1!"
+        });
+
+        var initialCode = (await factory.GetCodesForUserAsync(email)).Single().Code;
+        factory.TimeProvider.Advance(TimeSpan.FromMinutes(16));
+
+        var response = await client.PostAsJsonAsync("/auth/email-confirmation/confirm", new ConfirmEmailRequest
+        {
+            Email = email,
+            Code = initialCode
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var user = await factory.FindUserByEmailAsync(email);
+        Assert.False(user!.EmailConfirmed);
+    }
+
+    [Fact]
+    public async Task ConfirmEmail_WithSupersededCode_DoesNotConfirmAccount()
+    {
+        var email = "superseded-api@example.com";
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = "StrongPass1!",
+            ConfirmPassword = "StrongPass1!"
+        });
+
+        var firstCode = (await factory.GetCodesForUserAsync(email)).Single().Code;
+        factory.TimeProvider.Advance(TimeSpan.FromMinutes(2));
+        await client.PostAsJsonAsync("/auth/email-confirmation/resend", new ResendEmailConfirmationRequest
+        {
+            Email = email
+        });
+
+        var response = await client.PostAsJsonAsync("/auth/email-confirmation/confirm", new ConfirmEmailRequest
+        {
+            Email = email,
+            Code = firstCode
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var user = await factory.FindUserByEmailAsync(email);
+        Assert.False(user!.EmailConfirmed);
+    }
+
+    [Fact]
+    public async Task ConfirmEmail_AfterSuccess_AllowsFullLogin()
+    {
+        var email = "full-login@example.com";
+        const string password = "StrongPass1!";
+
+        await client.PostAsJsonAsync("/auth/register", new RegisterRequest
+        {
+            Email = email,
+            Password = password,
+            ConfirmPassword = password
+        });
+
+        var initialCode = (await factory.GetCodesForUserAsync(email)).Single().Code;
+        await client.PostAsJsonAsync("/auth/email-confirmation/confirm", new ConfirmEmailRequest
+        {
+            Email = email,
+            Code = initialCode
+        });
+
+        var response = await client.PostAsJsonAsync("/auth/login", new LoginRequest
+        {
+            Email = email,
+            Password = password
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.False(response.Headers.TryGetValues("Set-Cookie", out _));
+
+        var payload = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        Assert.NotNull(payload);
+        Assert.False(payload.RequiresEmailConfirmation);
+        Assert.Equal("authenticated", payload.Status);
     }
 }

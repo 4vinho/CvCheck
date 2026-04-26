@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace api.Infra.Services.Auth;
 
-public sealed class RegistrationService(UserManager<ApplicationUser> userManager) : IRegistrationService
+public sealed class RegistrationService(
+    UserManager<ApplicationUser> userManager,
+    IEmailConfirmationService emailConfirmationService) : IRegistrationService
 {
     public async Task<RegistrationResult> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
@@ -25,6 +27,7 @@ public sealed class RegistrationService(UserManager<ApplicationUser> userManager
             return RegistrationResult.Failure(IdentityErrorMapper.ToValidationErrors(createResult));
         }
 
+        await emailConfirmationService.GenerateAndSendCodeAsync(user, cancellationToken);
         return RegistrationResult.Success(user.Email!);
     }
 }
